@@ -801,7 +801,7 @@ app.get(
 // =========================================================
 
 app.get(
-    "/api/shipments",
+    ["/api/shipments", "/api/shipment/all"],
     (req, res) => {
 
         try {
