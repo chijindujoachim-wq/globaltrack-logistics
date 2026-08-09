@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>GlobalTrack Logistics</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="logo.jpg"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <div class="header-content">
+
+            <img
+                src="logo.jpg"
+                alt="GlobalTrack Logistics Logo"
+                class="logo-img"
+            >
+
+            <h1>
+                GlobalTrack Logistics
+            </h1>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="hero">
+
+        <h1>
+            Track Your Shipment
+        </h1>
+
+        <p>
+            Enter your tracking code to get real-time
+            delivery updates
+        </p>
+
+
+        <!-- =================================================
+             MODERN TRACKING CARD
+        ================================================== -->
+
+        <div class="tracking-card">
+
+            <!-- Tracking Icon -->
+
+            <div class="tracking-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="6"
+                    ></circle>
+
+                    <line
+                        x1="16"
+                        y1="16"
+                        x2="21"
+                        y2="21"
+                    ></line>
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="1"
+                        fill="currentColor"
+                        stroke="none"
+                    ></circle>
+
+                </svg>
+
+            </div>
+
+
+            <!-- Card Heading -->
+
+            <h2>
+                Track Your Package
+            </h2>
+
+
+            <!-- Description -->
+
+            <p class="tracking-description">
+                Enter your tracking number to get real-time
+                updates on your package
+            </p>
+
+
+            <!-- Label -->
+
+            <label
+                for="trackingCode"
+                class="tracking-label"
+            >
+                Tracking Number
+            </label>
+
+
+            <!-- Input -->
+
+            <div class="tracking-input-wrapper">
+
+                <!-- Barcode icon -->
+
+                <svg
+                    class="barcode-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    aria-hidden="true"
+                >
+
+                    <line x1="4" y1="5" x2="4" y2="19"></line>
+
+                    <line x1="7" y1="5" x2="7" y2="19"></line>
+
+                    <line x1="10" y1="5" x2="10" y2="19"></line>
+
+                    <line x1="14" y1="5" x2="14" y2="19"></line>
+
+                    <line x1="17" y1="5" x2="17" y2="19"></line>
+
+                    <line x1="20" y1="5" x2="20" y2="19"></line>
+
+                </svg>
+
+
+                <input
+                    type="text"
+                    id="trackingCode"
+                    placeholder="Enter your tracking number"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- Track Button -->
+
+            <button
+                type="button"
+                class="track-button"
+                onclick="trackShipment()"
+            >
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="6"
+                    ></circle>
+
+                    <line
+                        x1="16"
+                        y1="16"
+                        x2="21"
+                        y2="21"
+                    ></line>
+
+                </svg>
+
+                <span>
+                    Track Package
+                </span>
+
+            </button>
+
+
+            <!-- Error message -->
+
+            <p
+                id="trackingError"
+                class="tracking-error"
+            ></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RESULT SECTION
+    ====================================================== -->
+
+    <section id="resultSection">
+
+        <div id="result"></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        ©️ 2026 GlobalTrack Logistics.
+        All rights reserved.
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

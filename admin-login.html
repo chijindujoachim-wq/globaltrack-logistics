@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="logo.jpg">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Admin - GlobalTrack Logistics</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <!-- Background Particles -->
+    <div id="particles-js"></div>
+
+    <!-- Admin Badge -->
+    <div class="admin-badge">
+        <span>🛡 Admin Portal</span>
+    </div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-logo">
+    <img src="logo.jpg" alt="GlobalTrack Logo">
+</div>
+            <h1>Login</h1>
+            <div id="message" class="message-box"></div>
+            <form id="loginForm">
+                <div class="form-group floating">
+                    <input type="email" id="email" required>
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-group floating password-group">
+                    <input type="password" id="password" required>
+                    <label for="password">Password</label>
+
+                    <span class="toggle-password" id="togglePassword">
+                        👁
+                    </span>
+
+                </div>
+
+                <p class="forgot-password">
+                    <a href="forgot-password.html" id="forgotPasswordLink">Forgot Password?</a>
+                </p>
+                <div class="remember-clean">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Remember Me</label>
+                </div>
+                <button type="submit" class="btn-primary" id="loginBtn">
+                    <span class="btn-text">Login</span>
+                    <span class="btn-loader"></span>
+                </button>
+                <p class="auth-links">
+                New here?<a href="admin-register.html">Sign up</a>
+            </p>
+            </form>
+        </div>
+    </div>
+
+    <script src="login.js"></script>         
+    <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+    <script>
+    particlesJS.load('particles-js', 'particles.json');
+    </script>
+</body>
+</html>

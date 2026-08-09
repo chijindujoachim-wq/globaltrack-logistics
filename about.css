@@ -1,0 +1,130 @@
+/* ABOUT HERO */
+.about-hero {
+    height: 60vh;
+    background: url("img1010.jpg") center/cover no-repeat;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+}
+
+.about-hero-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    text-align: center;
+}
+
+/* GENERAL ABOUT */
+.about-section,
+.special-section,
+.testimonial-section {
+    padding: 80px 60px;
+    background: #0f172a;
+    color: white;
+}
+
+.mission-vision {
+    display: flex;
+    gap: 40px;
+    padding: 80px 60px;
+    background: #1e293b;
+    color: white;
+}
+
+.mv-box {
+    flex: 1;
+}
+
+/* SPECIAL GRID */
+.special-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 20px;
+}
+
+.special-card {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.special-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===============================
+   PREMIUM TESTIMONIAL SECTION
+=================================*/
+
+.testimonial-section {
+    padding: 100px 60px;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+.testimonial-wrapper {
+    overflow: hidden;
+    margin-top: 60px;
+}
+
+.testimonial-track {
+    display: flex;
+    gap: 40px;
+    animation: scrollLeft 60s linear infinite;
+}
+
+/* Pause on hover */
+.testimonial-wrapper:hover .testimonial-track {
+    animation-play-state: paused;
+}
+
+/* CARD */
+.testimonial-card {
+    min-width: 320px;
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    transition: 0.4s ease;
+    border: 1px solid #334155;
+}
+
+/* Glowing accent border */
+.testimonial-card:hover {
+    transform: translateY(-10px);
+    border-color: #ff9800;
+    box-shadow: 0 0 25px rgba(255,152,0,0.3);
+}
+
+/* Client Image */
+.client-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #ff9800;
+}
+
+/* Stars */
+.stars {
+    color: #ffcc00;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+/* Infinite Smooth Scroll */
+@keyframes scrollLeft {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}

@@ -1,0 +1,1581 @@
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// =========================================================
+// MIDDLEWARE
+// =========================================================
+
+app.use(cors());
+
+app.use(express.json({ limit: "2mb" }));
+
+app.use(
+    express.urlencoded({
+        extended: true,
+        limit: "2mb"
+    })
+);
+
+// Serve website files
+app.use(express.static(__dirname));
+
+
+// =========================================================
+// SHIPMENT DATABASE
+// =========================================================
+
+const shipmentsFile = path.join(
+    __dirname,
+    "shipments.json"
+);
+
+
+// =========================================================
+// DATABASE HELPERS
+// =========================================================
+
+function loadShipments() {
+
+    try {
+
+        if (!fs.existsSync(shipmentsFile)) {
+
+            fs.writeFileSync(
+                shipmentsFile,
+                "[]",
+                "utf8"
+            );
+
+            return [];
+        }
+
+        const data = fs.readFileSync(
+            shipmentsFile,
+            "utf8"
+        );
+
+        if (!data.trim()) {
+            return [];
+        }
+
+        const shipments = JSON.parse(data);
+
+        if (!Array.isArray(shipments)) {
+            console.warn(
+                "shipments.json does not contain an array. Resetting database."
+            );
+
+            return [];
+        }
+
+        return shipments;
+
+    } catch (error) {
+
+        console.error(
+            "Error loading shipments:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+function saveShipments(shipments) {
+
+    try {
+
+        const temporaryFile =
+            `${shipmentsFile}.tmp`;
+
+        fs.writeFileSync(
+            temporaryFile,
+            JSON.stringify(
+                shipments,
+                null,
+                2
+            ),
+            "utf8"
+        );
+
+        fs.renameSync(
+            temporaryFile,
+            shipmentsFile
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Error saving shipments:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+// =========================================================
+// UTILITY FUNCTIONS
+// =========================================================
+
+function clean(value) {
+
+    if (
+        value === undefined ||
+        value === null
+    ) {
+        return "";
+    }
+
+    return String(value).trim();
+}
+
+
+function normalizeTrackingCode(code) {
+
+    return clean(code).toUpperCase();
+}
+
+
+function getCurrentDate() {
+
+    return new Date().toISOString();
+}
+
+
+// =========================================================
+// SHIPMENT STATUS
+// =========================================================
+
+const VALID_STATUSES = [
+
+    "Shipment Created",
+
+    "Picked Up",
+
+    "In Transit",
+
+    "Arrived at Facility",
+
+    "Out for Delivery",
+
+    "Delivered",
+
+    "Custom Hold"
+
+];
+
+
+function normalizeStatus(status) {
+
+    const value = clean(status);
+
+    if (!value) {
+        return "";
+    }
+
+    const found = VALID_STATUSES.find(
+        item =>
+            item.toLowerCase() ===
+            value.toLowerCase()
+    );
+
+    return found || value;
+}
+
+
+function getProgress(status) {
+
+    const value =
+        clean(status).toLowerCase();
+
+    switch (value) {
+
+        case "shipment created":
+            return 10;
+
+        case "picked up":
+            return 25;
+
+        case "in transit":
+            return 50;
+
+        case "arrived at facility":
+            return 65;
+
+        case "out for delivery":
+            return 85;
+
+        case "delivered":
+            return 100;
+
+        case "custom hold":
+            return 45;
+
+        default:
+            return 50;
+    }
+}
+
+
+// =========================================================
+// TRACKING CODE GENERATOR
+// =========================================================
+
+function generateTrackingCode() {
+
+    const letters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    const numbers =
+        "0123456789";
+
+    let code = "GT-";
+
+    // Four random letters
+
+    for (let i = 0; i < 4; i++) {
+
+        code +=
+            letters.charAt(
+                Math.floor(
+                    Math.random() *
+                    letters.length
+                )
+            );
+    }
+
+    code += "-";
+
+    // Six random numbers
+
+    for (let i = 0; i < 6; i++) {
+
+        code +=
+            numbers.charAt(
+                Math.floor(
+                    Math.random() *
+                    numbers.length
+                )
+            );
+    }
+
+    return code;
+}
+
+
+function createUniqueTrackingCode(
+    shipments
+) {
+
+    let code;
+
+    do {
+
+        code =
+            generateTrackingCode();
+
+    } while (
+        shipments.some(
+            shipment =>
+                normalizeTrackingCode(
+                    shipment.trackingCode
+                ) ===
+                normalizeTrackingCode(code)
+        )
+    );
+
+    return code;
+}
+
+
+// =========================================================
+// FIND SHIPMENT
+// =========================================================
+
+function findShipment(
+    shipments,
+    trackingCode
+) {
+
+    const normalizedCode =
+        normalizeTrackingCode(
+            trackingCode
+        );
+
+    return shipments.find(
+        shipment =>
+            normalizeTrackingCode(
+                shipment.trackingCode
+            ) === normalizedCode
+    );
+}
+
+
+function findShipmentIndex(
+    shipments,
+    trackingCode
+) {
+
+    const normalizedCode =
+        normalizeTrackingCode(
+            trackingCode
+        );
+
+    return shipments.findIndex(
+        shipment =>
+            normalizeTrackingCode(
+                shipment.trackingCode
+            ) === normalizedCode
+    );
+}
+
+
+// =========================================================
+// VALIDATE SHIPMENT
+// =========================================================
+
+function validateShipmentData(
+    data
+) {
+
+    const requiredFields = [
+
+        "senderName",
+        "receiverName",
+        "receiverPhone",
+        "origin",
+        "destination",
+        "currentLocation",
+        "status"
+
+    ];
+
+    const missingFields = [];
+
+    for (const field of requiredFields) {
+
+        if (!clean(data[field])) {
+
+            missingFields.push(field);
+        }
+    }
+
+    return missingFields;
+}
+
+
+// =========================================================
+// CREATE SHIPMENT
+// =========================================================
+
+app.post(
+    "/api/shipment/create",
+    (req, res) => {
+
+        try {
+
+            const senderName =
+                clean(
+                    req.body.senderName
+                );
+
+            const receiverName =
+                clean(
+                    req.body.receiverName
+                );
+
+            const receiverPhone =
+                clean(
+                    req.body.receiverPhone
+                );
+
+            const origin =
+                clean(
+                    req.body.origin
+                );
+
+            const destination =
+                clean(
+                    req.body.destination
+                );
+
+            const currentLocation =
+                clean(
+                    req.body.currentLocation
+                );
+
+            const status =
+                normalizeStatus(
+                    req.body.status
+                );
+
+
+            // =================================================
+            // VALIDATION
+            // =================================================
+
+            const missingFields =
+                validateShipmentData({
+
+                    senderName,
+                    receiverName,
+                    receiverPhone,
+                    origin,
+                    destination,
+                    currentLocation,
+                    status
+
+                });
+
+
+            if (
+                missingFields.length > 0
+            ) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Please provide all shipment details.",
+
+                    missingFields
+
+                });
+            }
+
+
+            // =================================================
+            // LOAD DATABASE
+            // =================================================
+
+            const shipments =
+                loadShipments();
+
+
+            // =================================================
+            // CREATE TRACKING CODE
+            // =================================================
+
+            const trackingCode =
+                createUniqueTrackingCode(
+                    shipments
+                );
+
+
+            const now =
+                getCurrentDate();
+
+
+            // =================================================
+            // CREATE SHIPMENT
+            // =================================================
+
+            const shipment = {
+
+                id:
+                    `${Date.now()}-${Math.random()
+                        .toString(36)
+                        .substring(2, 8)}`,
+
+                trackingCode,
+
+                senderName,
+
+                receiverName,
+
+                receiverPhone,
+
+                origin,
+
+                destination,
+
+                currentLocation,
+
+                status,
+
+                createdAt:
+                    now,
+
+                updatedAt:
+                    now,
+
+                history: [
+
+                    {
+
+                        location:
+                            origin,
+
+                        status:
+                            "Shipment Created",
+
+                        date:
+                            now,
+
+                        note:
+                            "Shipment was registered successfully."
+
+                    },
+
+                    {
+
+                        location:
+                            currentLocation,
+
+                        status:
+                            status,
+
+                        date:
+                            now,
+
+                        note:
+                            "Initial shipment status recorded."
+
+                    }
+
+                ]
+
+            };
+
+
+            // =================================================
+            // SAVE
+            // =================================================
+
+            shipments.push(
+                shipment
+            );
+
+
+            const saved =
+                saveShipments(
+                    shipments
+                );
+
+
+            if (!saved) {
+
+                return res.status(500).json({
+
+                    message:
+                        "Shipment could not be saved."
+
+                });
+            }
+
+
+            console.log(
+                `Shipment created: ${trackingCode}`
+            );
+
+
+            // =================================================
+            // RESPONSE
+            // =================================================
+
+            return res.status(201).json({
+
+                message:
+                    "Shipment created successfully.",
+
+                trackingCode,
+
+                shipment: {
+
+                    ...shipment,
+
+                    progress:
+                        getProgress(
+                            shipment.status
+                        )
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Create shipment error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Server error while creating shipment."
+
+            });
+        }
+    }
+);
+
+
+// =========================================================
+// TRACK SHIPMENT
+// =========================================================
+
+app.get(
+    "/api/shipment/track/:trackingCode",
+    (req, res) => {
+
+        try {
+
+            const trackingCode =
+                normalizeTrackingCode(
+                    req.params.trackingCode
+                );
+
+
+            if (!trackingCode) {
+
+                return res.status(400).json({
+
+                    message:
+                        "Please provide a tracking code."
+
+                });
+            }
+
+
+            const shipments =
+                loadShipments();
+
+
+            const shipment =
+                findShipment(
+                    shipments,
+                    trackingCode
+                );
+
+
+            if (!shipment) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Shipment not found. Please check your tracking code."
+
+                });
+            }
+
+
+            // =================================================
+            // SUPPORT OLD SHIPMENTS
+            // =================================================
+
+            if (
+                !Array.isArray(
+                    shipment.history
+                )
+            ) {
+
+                shipment.history = [];
+
+            }
+
+
+            const status =
+                normalizeStatus(
+                    shipment.status
+                );
+
+
+            // =================================================
+            // TRACKING RESPONSE
+            // =================================================
+
+            return res.status(200).json({
+
+                id:
+                    shipment.id,
+
+                trackingCode:
+                    shipment.trackingCode,
+
+                senderName:
+                    shipment.senderName,
+
+                receiverName:
+                    shipment.receiverName,
+
+                receiverPhone:
+                    shipment.receiverPhone,
+
+                origin:
+                    shipment.origin,
+
+                destination:
+                    shipment.destination,
+
+                currentLocation:
+                    shipment.currentLocation,
+
+                status,
+
+                createdAt:
+                    shipment.createdAt,
+
+                updatedAt:
+                    shipment.updatedAt,
+
+                progress:
+                    getProgress(
+                        status
+                    ),
+
+                history:
+                    shipment.history,
+
+
+                // =================================================
+                // MAP COMPATIBILITY
+                // =================================================
+
+                sender: {
+
+                    name:
+                        shipment.senderName,
+
+                    address:
+                        shipment.origin,
+
+                    country:
+                        ""
+
+                },
+
+
+                receiver: {
+
+                    name:
+                        shipment.receiverName,
+
+                    address:
+                        shipment.destination,
+
+                    country:
+                        ""
+
+                },
+
+
+                current: {
+
+                    label:
+                        shipment.currentLocation
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Tracking error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Server error while retrieving shipment."
+
+            });
+        }
+    }
+);
+
+
+// =========================================================
+// GET ALL SHIPMENTS
+// =========================================================
+
+app.get(
+    "/api/shipments",
+    (req, res) => {
+
+        try {
+
+            const shipments =
+                loadShipments();
+
+
+            // Newest first
+
+            shipments.sort(
+                (a, b) =>
+                    new Date(
+                        b.createdAt || 0
+                    ) -
+                    new Date(
+                        a.createdAt || 0
+                    )
+            );
+
+
+            return res.status(200).json(
+                shipments.map(
+                    shipment => ({
+
+                        ...shipment,
+
+                        progress:
+                            getProgress(
+                                shipment.status
+                            )
+
+                    })
+                )
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Get shipments error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Unable to retrieve shipments."
+
+            });
+        }
+    }
+);
+
+
+// =========================================================
+// GET ONE SHIPMENT
+// =========================================================
+
+app.get(
+    "/api/shipment/:trackingCode",
+    (req, res) => {
+
+        try {
+
+            const trackingCode =
+                normalizeTrackingCode(
+                    req.params.trackingCode
+                );
+
+
+            const shipments =
+                loadShipments();
+
+
+            const shipment =
+                findShipment(
+                    shipments,
+                    trackingCode
+                );
+
+
+            if (!shipment) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Shipment not found."
+
+                });
+            }
+
+
+            return res.status(200).json({
+
+                ...shipment,
+
+                progress:
+                    getProgress(
+                        shipment.status
+                    )
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Get shipment error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Unable to retrieve shipment."
+
+            });
+        }
+    }
+);
+
+
+// =========================================================
+// UPDATE SHIPMENT
+// =========================================================
+
+app.put(
+    "/api/shipment/:trackingCode",
+    (req, res) => {
+
+        try {
+
+            const trackingCode =
+                normalizeTrackingCode(
+                    req.params.trackingCode
+                );
+
+
+            const shipments =
+                loadShipments();
+
+
+            const index =
+                findShipmentIndex(
+                    shipments,
+                    trackingCode
+                );
+
+
+            if (index === -1) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Shipment not found."
+
+                });
+            }
+
+
+            const shipment =
+                shipments[index];
+
+
+            // =================================================
+            // MAKE SURE HISTORY EXISTS
+            // =================================================
+
+            if (
+                !Array.isArray(
+                    shipment.history
+                )
+            ) {
+
+                shipment.history = [];
+
+            }
+
+
+            // =================================================
+            // OLD VALUES
+            // =================================================
+
+            const oldData = {
+
+                senderName:
+                    clean(
+                        shipment.senderName
+                    ),
+
+                receiverName:
+                    clean(
+                        shipment.receiverName
+                    ),
+
+                receiverPhone:
+                    clean(
+                        shipment.receiverPhone
+                    ),
+
+                origin:
+                    clean(
+                        shipment.origin
+                    ),
+
+                destination:
+                    clean(
+                        shipment.destination
+                    ),
+
+                currentLocation:
+                    clean(
+                        shipment.currentLocation
+                    ),
+
+                status:
+                    normalizeStatus(
+                        shipment.status
+                    )
+
+            };
+
+
+            // =================================================
+            // CHECK WHETHER FIELD EXISTS
+            // =================================================
+
+            const hasField =
+                field =>
+                    Object.prototype.hasOwnProperty.call(
+                        req.body,
+                        field
+                    );
+
+
+            // =================================================
+            // NEW VALUES
+            // =================================================
+
+            const newSenderName =
+                hasField("senderName")
+                    ? clean(
+                        req.body.senderName
+                    )
+                    : oldData.senderName;
+
+
+            const newReceiverName =
+                hasField("receiverName")
+                    ? clean(
+                        req.body.receiverName
+                    )
+                    : oldData.receiverName;
+
+
+            const newReceiverPhone =
+                hasField("receiverPhone")
+                    ? clean(
+                        req.body.receiverPhone
+                    )
+                    : oldData.receiverPhone;
+
+
+            const newOrigin =
+                hasField("origin")
+                    ? clean(
+                        req.body.origin
+                    )
+                    : oldData.origin;
+
+
+            const newDestination =
+                hasField("destination")
+                    ? clean(
+                        req.body.destination
+                    )
+                    : oldData.destination;
+
+
+            const newCurrentLocation =
+                hasField("currentLocation")
+                    ? clean(
+                        req.body.currentLocation
+                    )
+                    : oldData.currentLocation;
+
+
+            const newStatus =
+                hasField("status")
+                    ? normalizeStatus(
+                        req.body.status
+                    )
+                    : oldData.status;
+
+
+            // =================================================
+            // VALIDATION
+            // =================================================
+
+            if (
+                !newSenderName ||
+                !newReceiverName ||
+                !newReceiverPhone ||
+                !newOrigin ||
+                !newDestination ||
+                !newCurrentLocation ||
+                !newStatus
+            ) {
+
+                return res.status(400).json({
+
+                    message:
+                        "All shipment information must be provided."
+
+                });
+            }
+
+
+            // =================================================
+            // DETECT CHANGES
+            // =================================================
+
+            const changedFields = [];
+
+
+            if (
+                newSenderName !==
+                oldData.senderName
+            ) {
+
+                changedFields.push(
+                    "Sender"
+                );
+
+            }
+
+
+            if (
+                newReceiverName !==
+                oldData.receiverName
+            ) {
+
+                changedFields.push(
+                    "Receiver"
+                );
+
+            }
+
+
+            if (
+                newReceiverPhone !==
+                oldData.receiverPhone
+            ) {
+
+                changedFields.push(
+                    "Receiver Phone"
+                );
+
+            }
+
+
+            if (
+                newOrigin !==
+                oldData.origin
+            ) {
+
+                changedFields.push(
+                    "Origin"
+                );
+
+            }
+
+
+            if (
+                newDestination !==
+                oldData.destination
+            ) {
+
+                changedFields.push(
+                    "Destination"
+                );
+
+            }
+
+
+            if (
+                newCurrentLocation !==
+                oldData.currentLocation
+            ) {
+
+                changedFields.push(
+                    "Current Location"
+                );
+
+            }
+
+
+            if (
+                newStatus !==
+                oldData.status
+            ) {
+
+                changedFields.push(
+                    "Status"
+                );
+
+            }
+
+
+            const informationChanged =
+                changedFields.length > 0;
+
+
+            // =================================================
+            // APPLY UPDATE
+            // =================================================
+
+            shipment.senderName =
+                newSenderName;
+
+            shipment.receiverName =
+                newReceiverName;
+
+            shipment.receiverPhone =
+                newReceiverPhone;
+
+            shipment.origin =
+                newOrigin;
+
+            shipment.destination =
+                newDestination;
+
+            shipment.currentLocation =
+                newCurrentLocation;
+
+            shipment.status =
+                newStatus;
+
+
+            // =================================================
+            // UPDATE TIMESTAMP
+            // =================================================
+
+            const updateDate =
+                getCurrentDate();
+
+            shipment.updatedAt =
+                updateDate;
+
+
+            // =================================================
+            // ADD HISTORY
+            // =================================================
+
+            if (informationChanged) {
+
+                shipment.history.push({
+
+                    location:
+                        shipment.currentLocation,
+
+                    status:
+                        shipment.status,
+
+                    date:
+                        updateDate,
+
+                    note:
+                        `Shipment information updated: ${changedFields.join(", ")}.`
+
+                });
+
+            }
+
+
+            // =================================================
+            // SAVE
+            // =================================================
+
+            shipments[index] =
+                shipment;
+
+
+            const saved =
+                saveShipments(
+                    shipments
+                );
+
+
+            if (!saved) {
+
+                return res.status(500).json({
+
+                    message:
+                        "Shipment could not be saved."
+
+                });
+            }
+
+
+            console.log(
+                `Shipment updated: ${trackingCode}`
+            );
+
+
+            // =================================================
+            // RESPONSE
+            // =================================================
+
+            return res.status(200).json({
+
+                message:
+                    informationChanged
+                        ? "Shipment updated successfully."
+                        : "No shipment information was changed.",
+
+                shipment: {
+
+                    ...shipment,
+
+                    progress:
+                        getProgress(
+                            shipment.status
+                        )
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Update shipment error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Server error while updating shipment."
+
+            });
+        }
+    }
+);
+
+
+// =========================================================
+// DELETE SHIPMENT
+// =========================================================
+
+app.delete(
+    "/api/shipment/:trackingCode",
+    (req, res) => {
+
+        try {
+
+            const trackingCode =
+                normalizeTrackingCode(
+                    req.params.trackingCode
+                );
+
+
+            let shipments =
+                loadShipments();
+
+
+            const originalLength =
+                shipments.length;
+
+
+            shipments =
+                shipments.filter(
+                    shipment =>
+                        normalizeTrackingCode(
+                            shipment.trackingCode
+                        ) !== trackingCode
+                );
+
+
+            // =================================================
+            // NOT FOUND
+            // =================================================
+
+            if (
+                shipments.length ===
+                originalLength
+            ) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Shipment not found."
+
+                });
+            }
+
+
+            // =================================================
+            // SAVE
+            // =================================================
+
+            const saved =
+                saveShipments(
+                    shipments
+                );
+
+
+            if (!saved) {
+
+                return res.status(500).json({
+
+                    message:
+                        "Shipment could not be deleted."
+
+                });
+            }
+
+
+            console.log(
+                `Shipment deleted: ${trackingCode}`
+            );
+
+
+            return res.status(200).json({
+
+                message:
+                    "Shipment deleted successfully."
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Delete shipment error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Server error while deleting shipment."
+
+            });
+        }
+    }
+);
+
+
+// =========================================================
+// HEALTH CHECK
+// =========================================================
+
+app.get(
+    "/api/health",
+    (req, res) => {
+
+        return res.status(200).json({
+
+            status:
+                "online",
+
+            message:
+                "GlobalTrack Logistics server is running.",
+
+            port:
+                PORT,
+
+            time:
+                getCurrentDate()
+
+        });
+
+    }
+);
+
+
+// =========================================================
+// API 404 HANDLER
+// =========================================================
+
+app.use(
+    "/api",
+    (req, res) => {
+
+        return res.status(404).json({
+
+            message:
+                "API endpoint not found."
+
+        });
+
+    }
+);
+
+
+// =========================================================
+// GLOBAL ERROR HANDLER
+// =========================================================
+
+app.use(
+    (error, req, res, next) => {
+
+        console.error(
+            "Unhandled server error:",
+            error
+        );
+
+
+        if (
+            res.headersSent
+        ) {
+
+            return next(error);
+        }
+
+
+        return res.status(500).json({
+
+            message:
+                "Internal server error."
+
+        });
+
+    }
+);
+
+
+// =========================================================
+// SERVER START
+// =========================================================
+
+app.listen(
+    PORT,
+    () => {
+
+        console.log("");
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            "       GLOBALTRACK LOGISTICS SERVER"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            `Server running at: http://localhost:${PORT}`
+        );
+
+        console.log(
+            `Admin Dashboard:   http://localhost:${PORT}/admin.html`
+        );
+
+        console.log(
+            `Tracking Page:     http://localhost:${PORT}/index.html`
+        );
+
+        console.log(
+            `Shipments API:     http://localhost:${PORT}/api/shipments`
+        );
+
+        console.log(
+            `Health Check:      http://localhost:${PORT}/api/health`
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log("");
+
+    }
+);

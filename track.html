@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Track Shipment | GlobalTrack Logistics</title>
+
+    <link rel="icon" type="image/png" href="logo.jpg">
+
+    <!-- Leaflet Map CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <!-- Tracking Page CSS -->
+    <link rel="stylesheet" href="track.css">
+</head>
+
+<body>
+
+    <!-- =================================================
+         NAVIGATION
+    ================================================== -->
+
+    <header class="track-header">
+
+        <a href="main.html" class="brand">
+
+            <img
+                src="logo.jpg"
+                alt="GlobalTrack Logistics"
+            >
+
+            <span>
+                GlobalTrack Logistics
+            </span>
+
+        </a>
+
+
+        <a
+            href="main.html"
+            class="back-btn"
+        >
+            ← Track Another
+        </a>
+
+    </header>
+
+
+    <!-- =================================================
+         MAIN TRACKING PAGE
+    ================================================== -->
+
+    <main class="tracking-page">
+
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div
+            id="loading"
+            class="loading-box"
+        >
+
+            <div class="loader-spinner"></div>
+
+            <p>
+                Loading shipment information...
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             ERROR MESSAGE
+        ================================================== -->
+
+        <div
+            id="errorBox"
+            class="error-box hidden"
+        >
+
+            <div class="error-icon">
+                !
+            </div>
+
+            <h2>
+                Shipment Not Found
+            </h2>
+
+            <p id="errorMessage">
+                We could not find a shipment associated
+                with this tracking code.
+            </p>
+
+            <a
+                href="index.html"
+                class="error-btn"
+            >
+                Try Another Tracking Code
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             REAL SHIPMENT RESULT
+             
+             track.js uses this container to display
+             the shipment returned by your server.
+        ================================================== -->
+
+        <div
+            id="shipmentResult"
+            class="shipment-result"
+        ></div>
+
+
+        <!-- =================================================
+             SHIPMENT CONTENT
+        ================================================== -->
+
+        <section
+            id="shipmentContent"
+            class="hidden"
+        >
+
+
+            <!-- =================================================
+                 PAGE HEADING
+            ================================================== -->
+
+            <div class="page-heading">
+
+                <span class="heading-label">
+                    SHIPMENT TRACKING
+                </span>
+
+                <h1>
+                    Shipment Details
+                </h1>
+
+                <p>
+                    Follow the current status and transportation
+                    route of your shipment.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 TRACKING SUMMARY
+            ================================================== -->
+
+            <div class="tracking-summary">
+
+                <div>
+
+                    <span class="small-label">
+                        TRACKING NUMBER
+                    </span>
+
+                    <strong id="trackingNumber">
+                        ---
+                    </strong>
+
+                </div>
+
+
+                <div class="status-wrapper">
+
+                    <span class="small-label">
+                        CURRENT STATUS
+                    </span>
+
+                    <span
+                        id="shipmentStatus"
+                        class="status-badge"
+                    >
+                        ---
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SHIPMENT INFORMATION
+            ================================================== -->
+
+            <section class="details-card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Shipment Information
+                    </h2>
+
+                    <span>
+                        Package Details
+                    </span>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Shipment Type
+                        </span>
+
+                        <strong id="shipmentType">
+                            ---
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Package
+                        </span>
+
+                        <strong id="packageName">
+                            ---
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Weight
+                        </span>
+
+                        <strong id="packageWeight">
+                            ---
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Shipping Method
+                        </span>
+
+                        <strong id="shippingMethod">
+                            ---
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Estimated Delivery
+                        </span>
+
+                        <strong id="estimatedDelivery">
+                            ---
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Last Updated
+                        </span>
+
+                        <strong id="lastUpdated">
+                            ---
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 SENDER / RECEIVER
+            ================================================== -->
+
+            <section class="locations-grid">
+
+
+                <!-- SENDER -->
+
+                <div class="location-card sender-card">
+
+                    <div class="location-icon">
+                        ↑
+                    </div>
+
+
+                    <div>
+
+                        <span class="location-label">
+                            SENDER
+                        </span>
+
+                        <h3 id="senderName">
+                            ---
+                        </h3>
+
+                        <p id="senderAddress">
+                            ---
+                        </p>
+
+                        <p id="senderCountry">
+                            ---
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROUTE -->
+
+                <div class="route-line">
+
+                    <span>
+                        TO
+                    </span>
+
+                </div>
+
+
+                <!-- RECEIVER -->
+
+                <div class="location-card receiver-card">
+
+                    <div class="location-icon">
+                        ↓
+                    </div>
+
+
+                    <div>
+
+                        <span class="location-label">
+                            RECEIVER
+                        </span>
+
+                        <h3 id="receiverName">
+                            ---
+                        </h3>
+
+                        <p id="receiverAddress">
+                            ---
+                        </p>
+
+                        <p id="receiverCountry">
+                            ---
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 LIVE SHIPPING MAP
+            ================================================== -->
+
+            <section class="map-section">
+
+
+                <div class="map-heading">
+
+                    <div>
+
+                        <span class="heading-label">
+                            SHIPMENT ROUTE
+                        </span>
+
+                        <h2>
+                            Shipping Route
+                        </h2>
+
+                    </div>
+
+
+                    <div class="map-status">
+
+                        <span class="live-dot"></span>
+
+                        Route Active
+
+                    </div>
+
+                </div>
+
+
+                <!-- MAP -->
+
+                <div id="map"></div>
+
+
+                <!-- MAP ERROR / INFORMATION -->
+
+                <p
+                    id="mapMessage"
+                    class="map-message"
+                ></p>
+
+
+                <!-- MAP LEGEND -->
+
+                <div class="map-legend">
+
+
+                    <div>
+
+                        <span
+                            class="legend-dot sender-dot">
+                        </span>
+
+                        Sender
+
+                    </div>
+
+
+                    <div>
+
+                        <span
+                            class="legend-dot package-dot">
+                        </span>
+
+                        Current Shipment Location
+
+                    </div>
+
+
+                    <div>
+
+                        <span
+                            class="legend-dot receiver-dot">
+                        </span>
+
+                        Receiver
+
+                    </div>
+
+                </div>
+
+
+                <p class="map-note">
+
+                    The map displays the shipment route between
+                    the sender and receiver locations. Shipment
+                    position updates are based on the latest
+                    location information available.
+
+                </p>
+
+            </section>
+
+
+            <!-- =================================================
+                 SHIPMENT PROGRESS
+            ================================================== -->
+
+            <section class="progress-card">
+
+
+                <div class="card-title">
+
+                    <h2>
+                        Shipment Progress
+                    </h2>
+
+                    <span id="progressPercentage">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <div class="progress-bar">
+
+                    <div
+                        id="progressFill"
+                        class="progress-fill"
+                    ></div>
+
+                </div>
+
+
+                <div class="progress-labels">
+
+                    <span>
+                        Shipment Created
+                    </span>
+
+                    <span>
+                        In Transit
+                    </span>
+
+                    <span>
+                        Out for Delivery
+                    </span>
+
+                    <span>
+                        Delivered
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 TRACKING TIMELINE
+            ================================================== -->
+
+            <section class="timeline-card">
+
+
+                <div class="card-title">
+
+                    <h2>
+                        Tracking History
+                    </h2>
+
+                    <span>
+                        Shipment Updates
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="timeline"
+                    class="timeline"
+                >
+
+                    <!--
+                        track.js will insert shipment
+                        history here when your backend
+                        provides it.
+                    -->
+
+                </div>
+
+            </section>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- =================================================
+         FOOTER
+    ================================================== -->
+
+    <footer>
+
+        <p>
+            ©️ 2026 GlobalTrack Logistics.
+            All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- =================================================
+         LEAFLET MAP JAVASCRIPT
+    ================================================== -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+
+    <!-- =================================================
+         TRACKING JAVASCRIPT
+    ================================================== -->
+
+    <script src="track.js"></script>
+
+</body>
+</html>

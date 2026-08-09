@@ -1,0 +1,1286 @@
+/* =========================================
+   GLOBAL RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(255, 152, 0, 0.14),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #0f2027,
+            #203a43,
+            #2c5364
+        );
+
+    min-height: 100vh;
+
+    color: #17212b;
+}
+
+
+/* =========================================
+   UTILITY
+========================================= */
+
+.hidden {
+    display: none !important;
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.admin-page {
+    min-height: 100vh;
+
+    padding: 40px 20px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+}
+
+
+/* =========================================
+   DASHBOARD
+========================================= */
+
+.dashboard {
+    width: 100%;
+
+    max-width: 1050px;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.28);
+
+    overflow: hidden;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.dashboard-header {
+    background: #0f2027;
+
+    color: white;
+
+    padding: 25px 35px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+.brand img {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 13px;
+
+    object-fit: cover;
+
+    border: 2px solid rgba(255,255,255,0.8);
+}
+
+.brand h1 {
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+.brand p {
+    margin-top: 4px;
+
+    color: #b8c5ca;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   ADMIN BADGE
+========================================= */
+
+.admin-badge {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 14px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    border-radius: 30px;
+
+    font-size: 13px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    background: #38c172;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 8px rgba(56,193,114,0.7);
+}
+
+
+/* =========================================
+   CREATE SECTION
+========================================= */
+
+.create-section {
+    background: #ffffff;
+}
+
+
+/* =========================================
+   FORM HEADER
+========================================= */
+
+.form-header {
+    padding: 35px 40px 20px;
+}
+
+.section-label {
+    display: inline-block;
+
+    color: #f57c00;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 8px;
+}
+
+.form-header h2,
+.registered-header h2 {
+    font-size: 28px;
+
+    color: #203a43;
+
+    margin-bottom: 8px;
+}
+
+.form-header p,
+.registered-header p {
+    color: #68747c;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+
+    max-width: 700px;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+#shipmentForm {
+    padding: 0 40px 40px;
+}
+
+
+/* =========================================
+   FORM SECTION
+========================================= */
+
+.form-section {
+    margin-top: 25px;
+
+    padding: 25px;
+
+    border: 1px solid #e6eaed;
+
+    border-radius: 14px;
+
+    background: #fbfcfd;
+}
+
+.form-section h3 {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #203a43;
+
+    font-size: 17px;
+
+    margin-bottom: 22px;
+}
+
+.form-section h3 span {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #ff9800;
+
+    color: white;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   GRID
+========================================= */
+
+.form-grid,
+.edit-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+
+.input-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #37474f;
+}
+
+.input-group small {
+    color: #7c888e;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d8dee2;
+
+    border-radius: 8px;
+
+    background: white;
+
+    color: #263238;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #ff9800;
+
+    box-shadow:
+        0 0 0 3px rgba(255,152,0,0.12);
+}
+
+
+/* =========================================
+   FORM ACTION
+========================================= */
+
+.form-actions {
+    margin-top: 25px;
+
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+#createShipmentBtn {
+    min-width: 200px;
+
+    min-height: 50px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff9800,
+            #f57c00
+        );
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(255,152,0,0.25);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#createShipmentBtn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(255,152,0,0.32);
+}
+
+#createShipmentBtn:disabled {
+    opacity: 0.7;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================
+   BUTTON LOADER
+========================================= */
+
+.button-loader {
+    display: none;
+
+    width: 16px;
+    height: 16px;
+
+    margin-left: 8px;
+
+    vertical-align: middle;
+
+    border: 2px solid rgba(255,255,255,0.4);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation: buttonSpin 0.7s linear infinite;
+}
+
+#createShipmentBtn.loading .button-loader {
+    display: inline-block;
+}
+
+@keyframes buttonSpin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   RESPONSE
+========================================= */
+
+.response {
+    margin: 0 40px 20px;
+}
+
+.response-loading,
+.response-error {
+    padding: 15px 18px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+}
+
+.response-loading {
+    background: #f3f6f7;
+
+    color: #526069;
+}
+
+.response-error {
+    background: #fff1f1;
+
+    border: 1px solid #f2bcbc;
+
+    color: #b42318;
+}
+
+
+/* =========================================
+   SUCCESS CARD
+========================================= */
+
+.response-success {
+    position: relative;
+
+    padding: 30px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ecfdf3,
+            #f7fffa
+        );
+
+    border: 1px solid #b7ebca;
+
+    overflow: hidden;
+
+    animation: successAppear 0.45s ease;
+}
+
+@keyframes successAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+.success-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.success-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #22a06b;
+
+    color: white;
+
+    font-size: 24px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 6px 15px rgba(34,160,107,0.22);
+}
+
+.response-success h3 {
+    color: #166534;
+
+    font-size: 20px;
+
+    margin-bottom: 4px;
+}
+
+.response-success p {
+    color: #4d6658;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   TRACKING CODE BOX
+========================================= */
+
+.generated-code-box {
+    margin-top: 20px;
+
+    padding: 20px;
+
+    background: white;
+
+    border: 1px solid #cce7d6;
+
+    border-radius: 12px;
+}
+
+.generated-code-label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #65756c;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+}
+
+.code-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.generated-code {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 13px 15px;
+
+    background: #0f2027;
+
+    color: #ff9800;
+
+    border-radius: 9px;
+
+    font-size: 23px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    word-break: break-all;
+}
+
+.copy-code-icon {
+    width: 48px;
+    height: 48px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #0f2027;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.copy-code-icon:hover {
+    background: #203a43;
+
+    transform: translateY(-2px);
+}
+
+.copy-code-icon.copied {
+    background: #22a06b;
+}
+
+.code-help {
+    margin-top: 12px;
+
+    color: #68747c;
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   REGISTERED SHIPMENTS
+========================================= */
+
+.registered-section {
+    padding: 40px;
+
+    border-top: 1px solid #e8edef;
+
+    background: #f8fafb;
+}
+
+.registered-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 20px;
+}
+
+.refresh-btn {
+    padding: 11px 16px;
+
+    border: 1px solid #d7dfe3;
+
+    border-radius: 8px;
+
+    background: white;
+
+    color: #263238;
+
+    cursor: pointer;
+
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.refresh-btn:hover {
+    background: #f0f4f5;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.shipment-search {
+    margin-top: 25px;
+}
+
+.shipment-search input {
+    width: 100%;
+
+    min-height: 50px;
+
+    padding: 13px 16px;
+
+    border: 1px solid #d8dee2;
+
+    border-radius: 10px;
+
+    background: white;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.shipment-search input:focus {
+    border-color: #ff9800;
+
+    box-shadow:
+        0 0 0 3px rgba(255,152,0,0.1);
+}
+
+
+/* =========================================
+   COUNT
+========================================= */
+
+.shipment-count {
+    padding: 15px 0;
+
+    color: #68747c;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   SHIPMENT LIST
+========================================= */
+
+.shipment-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.shipment-card {
+    display: grid;
+
+    grid-template-columns:
+        minmax(150px, 1fr)
+        minmax(130px, 1fr)
+        minmax(130px, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 18px;
+
+    background: white;
+
+    border: 1px solid #e0e6e9;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.shipment-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #ffb74d;
+
+    box-shadow:
+        0 8px 20px rgba(15,32,39,0.08);
+}
+
+.shipment-card-code {
+    color: #203a43;
+
+    font-weight: 900;
+
+    font-size: 15px;
+
+    letter-spacing: 1px;
+}
+
+.shipment-card-label {
+    display: block;
+
+    color: #8a969b;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.8px;
+
+    margin-bottom: 5px;
+}
+
+.shipment-card-value {
+    color: #36454d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.shipment-status {
+    display: inline-flex;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: #fff4e5;
+
+    color: #b85c00;
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+.edit-shipment-btn {
+    border: none;
+
+    padding: 9px 13px;
+
+    border-radius: 7px;
+
+    background: #203a43;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.edit-shipment-btn:hover {
+    background: #0f2027;
+}
+
+
+/* =========================================
+   LOADING / EMPTY
+========================================= */
+
+.shipments-loading,
+.empty-shipments {
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #68747c;
+
+    background: white;
+
+    border: 1px dashed #d5dde0;
+
+    border-radius: 12px;
+}
+
+.small-spinner {
+    display: inline-block;
+
+    width: 16px;
+    height: 16px;
+
+    margin-right: 8px;
+
+    vertical-align: middle;
+
+    border: 2px solid #d8dee2;
+
+    border-top-color: #ff9800;
+
+    border-radius: 50%;
+
+    animation: buttonSpin 0.7s linear infinite;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    padding: 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(7,18,23,0.72);
+
+    backdrop-filter: blur(5px);
+
+    overflow-y: auto;
+}
+
+.edit-modal {
+    width: 100%;
+
+    max-width: 850px;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.35);
+
+    animation: modalAppear 0.25s ease;
+}
+
+@keyframes modalAppear {
+
+    from {
+        opacity: 0;
+        transform: scale(0.97) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+}
+
+.modal-header {
+    padding: 25px 30px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    border-bottom: 1px solid #e7ecef;
+}
+
+.modal-header h2 {
+    color: #203a43;
+
+    margin-bottom: 5px;
+}
+
+.modal-header p {
+    color: #68747c;
+
+    font-size: 13px;
+}
+
+.close-modal {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f0f3f4;
+
+    color: #34444b;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    background: #e5eaec;
+}
+
+#editShipmentForm {
+    padding: 30px;
+}
+
+.edit-response {
+    margin-top: 20px;
+}
+
+.modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 25px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e7ecef;
+}
+
+.cancel-btn,
+.save-btn {
+    min-height: 45px;
+
+    padding: 0 18px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: 700;
+}
+
+.cancel-btn {
+    border: 1px solid #d5dde0;
+
+    background: white;
+
+    color: #45555c;
+}
+
+.save-btn {
+    border: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff9800,
+            #f57c00
+        );
+
+    color: white;
+
+    box-shadow:
+        0 6px 15px rgba(255,152,0,0.2);
+}
+
+.save-btn:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 800px) {
+
+    .shipment-card {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .shipment-card-action {
+        grid-column: 1 / -1;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .admin-page {
+        padding: 15px;
+    }
+
+    .dashboard {
+        border-radius: 14px;
+    }
+
+    .dashboard-header {
+        padding: 20px;
+    }
+
+    .brand img {
+        width: 45px;
+        height: 45px;
+    }
+
+    .brand h1 {
+        font-size: 17px;
+    }
+
+    .brand p {
+        font-size: 11px;
+    }
+
+    .admin-badge {
+        font-size: 11px;
+        padding: 7px 10px;
+    }
+
+    .form-header {
+        padding: 28px 20px 15px;
+    }
+
+    .form-header h2,
+    .registered-header h2 {
+        font-size: 23px;
+    }
+
+    #shipmentForm {
+        padding: 0 20px 30px;
+    }
+
+    .form-section {
+        padding: 18px;
+    }
+
+    .form-grid,
+    .edit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        justify-content: stretch;
+    }
+
+    #createShipmentBtn {
+        width: 100%;
+    }
+
+    .response {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .registered-section {
+        padding: 30px 20px;
+    }
+
+    .registered-header {
+        flex-direction: column;
+    }
+
+    .refresh-btn {
+        width: 100%;
+    }
+
+    .generated-code {
+        font-size: 18px;
+    }
+
+    .shipment-card {
+        grid-template-columns: 1fr;
+    }
+
+    .shipment-card-action {
+        grid-column: auto;
+    }
+
+    .edit-modal {
+        max-height: 95vh;
+    }
+
+    #editShipmentForm {
+        padding: 20px;
+    }
+
+}
+
+
+@media (max-width: 420px) {
+
+    .dashboard-header {
+        align-items: flex-start;
+    }
+
+    .admin-badge {
+        display: none;
+    }
+
+    .brand {
+        gap: 10px;
+    }
+
+    .brand h1 {
+        font-size: 16px;
+    }
+
+    .form-section {
+        padding: 15px;
+    }
+
+    .response-success {
+        padding: 20px;
+    }
+
+    .code-row {
+        align-items: stretch;
+    }
+
+    .generated-code {
+        font-size: 16px;
+
+        display: flex;
+
+        align-items: center;
+    }
+
+    .copy-code-icon {
+        width: 45px;
+        min-width: 45px;
+    }
+
+    .modal-overlay {
+        padding: 10px;
+    }
+
+}

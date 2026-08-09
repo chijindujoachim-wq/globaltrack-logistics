@@ -1,0 +1,339 @@
+/* ===== RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== BODY ===== */
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== AUTH CARD ===== */
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+.auth-box {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 18px;
+  padding: 40px 35px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.15);
+  animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== LOGO ===== */
+.auth-logo img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  border: 3px solid #ff9800;
+}
+
+/* ===== TITLE ===== */
+.auth-box h1 {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #ff9800;
+  letter-spacing: 1px;
+}
+
+/* ===== FORM GROUP ===== */
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: #ddd;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #ff9800;
+  box-shadow: 0 0 10px rgba(255,152,0,0.5);
+}
+
+/* ===== BUTTON ===== */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #ff9800, #ff6a00);
+  color: white;
+  transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(255,152,0,0.4);
+}
+
+/* ===== LINKS ===== */
+.auth-links {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.auth-links a {
+  color: #ff9800;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+/* ===== FORGOT PASSWORD ===== */
+.forgot-password {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.forgot-password a {
+  color: #ff9800;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* ===== PASSWORD TOGGLE ===== */
+.password-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.toggle-password svg {
+  stroke: #ccc;
+}
+
+.toggle-password:hover svg {
+  stroke: #ff9800;
+}
+
+/* ===== MESSAGE BOX ===== */
+.message-box {
+  display: none;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.message-error {
+  background: rgba(255,0,0,0.15);
+  color: #ff4d4d;
+  border: 1px solid #ff4d4d;
+}
+
+.message-success {
+  background: rgba(0,255,136,0.15);
+  color: #00ff88;
+  border: 1px solid #00ff88;
+}
+
+/* PARTICLE BACKGROUND */
+#particles-js {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  left: 0;
+}
+
+/* ADMIN BADGE */
+.admin-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: linear-gradient(45deg, #ff9800, #ff5722);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(255,152,0,0.6);
+}
+
+/* FLOATING LABELS */
+.form-group.floating {
+  position: relative;
+}
+
+.form-group.floating input {
+  padding: 18px 14px 10px 14px;
+}
+
+.form-group.floating label {
+  position: absolute;
+  left: 15px;
+  top: 16px;
+  font-size: 14px;
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+.form-group.floating input:focus + label,
+.form-group.floating input:not(:placeholder-shown) + label {
+  top: 5px;
+  font-size: 11px;
+  color: #fff;
+}
+
+/* PASSWORD STRENGTH */
+.strength-meter {
+  height: 5px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+  margin-top: 8px;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 5px;
+  transition: 0.4s;
+}
+
+/* REMEMBER TOGGLE */
+.remember-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* CLEAN REMEMBER ME */
+
+.remember-clean {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 15px 0;
+    font-size: 14px;
+    color: #ddd;
+}
+
+.remember-clean input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #ff9800;
+    cursor: pointer;
+}
+
+.remember-clean label {
+    cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  background: #ccc;
+  border-radius: 20px;
+  width: 100%;
+  height: 100%;
+  transition: 0.4s;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+.switch input:checked + .slider {
+  background: #00ff99;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* BUTTON LOADER */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-loader {
+  display: none;
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fff;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

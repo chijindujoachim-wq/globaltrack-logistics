@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        GlobalTrack Logistics | Admin Dashboard
+    </title>
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="logo.jpg"
+    >
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<main class="admin-page">
+
+
+    <section class="dashboard">
+
+
+        <!-- =========================================
+             DASHBOARD HEADER
+        ========================================== -->
+
+        <header class="dashboard-header">
+
+            <div class="brand">
+
+                <img
+                    src="logo.jpg"
+                    alt="GlobalTrack Logistics Logo"
+                >
+
+                <div>
+
+                    <h1>
+                        GlobalTrack Logistics
+                    </h1>
+
+                    <p>
+                        Shipment Management Dashboard
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-badge">
+
+                <span class="status-dot"></span>
+
+                Admin
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =========================================
+             CREATE SHIPMENT SECTION
+        ========================================== -->
+
+        <section class="create-section">
+
+
+            <div class="form-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SHIPMENT MANAGEMENT
+                    </span>
+
+                    <h2>
+                        Create New Shipment
+                    </h2>
+
+                    <p>
+                        Enter the shipment information below.
+                        A unique tracking code will be generated
+                        automatically after creation.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <form id="shipmentForm">
+
+
+                <!-- =====================================
+                     CUSTOMER INFORMATION
+                ====================================== -->
+
+                <div class="form-section">
+
+                    <h3>
+
+                        <span>01</span>
+
+                        Customer Information
+
+                    </h3>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="input-group">
+
+                            <label for="senderName">
+                                Sender Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="senderName"
+                                placeholder="Enter sender name"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label for="receiverName">
+                                Receiver Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="receiverName"
+                                placeholder="Enter receiver name"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group full-width">
+
+                            <label for="receiverPhone">
+                                Receiver Phone
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="receiverPhone"
+                                placeholder="Enter receiver phone number"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     PACKAGE INFORMATION
+                ====================================== -->
+
+                <div class="form-section">
+
+                    <h3>
+
+                        <span>02</span>
+
+                        Package Information
+
+                    </h3>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="input-group">
+
+                            <label for="shipmentType">
+                                Shipment Type
+                            </label>
+
+                            <select id="shipmentType">
+
+                                <option value="">
+                                    Select shipment type
+                                </option>
+
+                                <option value="Domestic Shipment">
+                                    Domestic Shipment
+                                </option>
+
+                                <option value="International Shipment">
+                                    International Shipment
+                                </option>
+
+                                <option value="Express Shipment">
+                                    Express Shipment
+                                </option>
+
+                                <option value="General Cargo">
+                                    General Cargo
+                                </option>
+
+                                <option value="Document">
+                                    Document
+                                </option>
+
+                                <option value="Parcel">
+                                    Parcel
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label for="packageName">
+                                Package Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="packageName"
+                                placeholder="e.g. Electronics"
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label for="packageWeight">
+                                Package Weight
+                            </label>
+
+                            <input
+                                type="text"
+                                id="packageWeight"
+                                placeholder="e.g. 12.5 kg"
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label for="shippingMethod">
+                                Shipping Method
+                            </label>
+
+                            <select id="shippingMethod">
+
+                                <option value="">
+                                    Select shipping method
+                                </option>
+
+                                <option value="Air Freight">
+                                    Air Freight
+                                </option>
+
+                                <option value="Sea Freight">
+                                    Sea Freight
+                                </option>
+
+                                <option value="Road Transport">
+                                    Road Transport
+                                </option>
+
+                                <option value="Express Delivery">
+                                    Express Delivery
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     ROUTE
+                ====================================== -->
+
+                <div class="form-section">
+
+                    <h3>
+
+                        <span>03</span>
+
+                        Shipment Route
+
+                    </h3>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="input-group">
+
+                            <label for="origin">
+                                Origin / Sender Address
+                            </label>
+
+                            <input
+                                type="text"
+                                id="origin"
+                                placeholder="Enter shipment origin"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group">
+
+                            <label for="destination">
+                                Destination / Receiver Address
+                            </label>
+
+                            <input
+                                type="text"
+                                id="destination"
+                                placeholder="Enter delivery destination"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="input-group full-width">
+
+                            <label for="currentLocation">
+                                Current Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="currentLocation"
+                                placeholder="Enter current shipment location"
+                                required
+                            >
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     STATUS
+                ====================================== -->
+
+                <div class="form-section">
+
+                    <h3>
+
+                        <span>04</span>
+
+                        Shipment Status
+
+                    </h3>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="input-group full-width">
+
+                            <label for="status">
+                                Current Status
+                            </label>
+
+                            <select
+                                id="status"
+                                required
+                            >
+
+                                <option value="">
+                                    Select shipment status
+                                </option>
+
+                                <option value="Shipment Created">
+                                    Shipment Created
+                                </option>
+
+                                <option value="Picked Up">
+                                    Picked Up
+                                </option>
+
+                                <option value="In Transit">
+                                    In Transit
+                                </option>
+
+                                <option value="Arrived at Facility">
+                                    Arrived at Facility
+                                </option>
+
+                                <option value="Out for Delivery">
+                                    Out for Delivery
+                                </option>
+
+                                <option value="Custom Hold">
+                                    Custom Hold
+                                </option>
+
+                                <option value="Delivered">
+                                    Delivered
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- CUSTOM HOLD -->
+
+                        <div
+                            class="input-group full-width custom-status-group hidden"
+                            id="customStatusGroup"
+                        >
+
+                            <label for="customStatus">
+                                Custom Hold Reason / Status
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customStatus"
+                                placeholder="e.g. Customs clearance required"
+                            >
+
+                            <small>
+                                This message will be displayed as the
+                                shipment's current status.
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     ESTIMATED DELIVERY
+                ====================================== -->
+
+                <div class="form-section">
+
+                    <h3>
+
+                        <span>05</span>
+
+                        Delivery Information
+
+                    </h3>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="input-group full-width">
+
+                            <label for="estimatedDelivery">
+                                Estimated Delivery
+                            </label>
+
+                            <input
+                                type="date"
+                                id="estimatedDelivery"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     SUBMIT
+                ====================================== -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        id="createShipmentBtn"
+                    >
+
+                        <span class="button-text">
+                            Create Shipment
+                        </span>
+
+                        <span
+                            class="button-loader"
+                            id="buttonLoader"
+                        ></span>
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+
+            <!-- =========================================
+                 RESPONSE
+            ========================================== -->
+
+            <div
+                id="response"
+                class="response"
+                aria-live="polite"
+            ></div>
+
+
+
+            <!-- =========================================
+                 TRACKING CODE RESULT
+            ========================================== -->
+
+            <div
+                id="trackingResult"
+                class="tracking-result"
+            ></div>
+
+
+        </section>
+
+
+
+        <!-- =========================================
+             REGISTERED SHIPMENTS
+        ========================================== -->
+
+        <section class="registered-section">
+
+
+            <div class="registered-header">
+
+                <div>
+
+                    <span class="section-label">
+                        SHIPMENT DATABASE
+                    </span>
+
+                    <h2>
+                        Registered Shipments
+                    </h2>
+
+                    <p>
+                        View, search and update previously registered
+                        shipments.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="refreshShipmentsBtn"
+                    class="refresh-btn"
+                >
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+
+
+            <!-- SEARCH -->
+
+            <div class="shipment-search">
+
+                <input
+                    type="search"
+                    id="shipmentSearch"
+                    placeholder="Search tracking code, sender or receiver..."
+                >
+
+            </div>
+
+
+
+            <!-- SHIPMENT COUNT -->
+
+            <div class="shipment-count">
+
+                <span id="shipmentCount">
+                    0 shipments
+                </span>
+
+            </div>
+
+
+
+            <!-- SHIPMENT LIST -->
+
+            <div
+                id="shipmentList"
+                class="shipment-list"
+            >
+
+                <div class="shipments-loading">
+
+                    <span class="small-spinner"></span>
+
+                    Loading registered shipments...
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =============================================
+     EDIT SHIPMENT MODAL
+============================================== -->
+
+<div
+    id="editModal"
+    class="modal-overlay hidden"
+>
+
+
+    <div class="edit-modal">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="section-label">
+                    SHIPMENT MANAGEMENT
+                </span>
+
+                <h2>
+                    Update Shipment
+                </h2>
+
+                <p id="editTrackingCode">
+                    Tracking Code
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="closeModalBtn"
+                class="close-modal"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <form id="editShipmentForm">
+
+
+            <input
+                type="hidden"
+                id="editCode"
+            >
+
+
+            <div class="edit-grid">
+
+
+                <div class="input-group">
+
+                    <label for="editSenderName">
+                        Sender Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editSenderName"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editReceiverName">
+                        Receiver Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editReceiverName"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group full-width">
+
+                    <label for="editReceiverPhone">
+                        Receiver Phone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="editReceiverPhone"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editOrigin">
+                        Origin
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editOrigin"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editDestination">
+                        Destination
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editDestination"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group full-width">
+
+                    <label for="editCurrentLocation">
+                        Current Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editCurrentLocation"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editShipmentType">
+                        Shipment Type
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editShipmentType"
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editPackageName">
+                        Package
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editPackageName"
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editWeight">
+                        Weight
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editWeight"
+                    >
+
+                </div>
+
+
+
+                <div class="input-group">
+
+                    <label for="editShippingMethod">
+                        Shipping Method
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editShippingMethod"
+                    >
+
+                </div>
+
+
+
+                <div class="input-group full-width">
+
+                    <label for="editStatus">
+                        Shipment Status
+                    </label>
+
+                    <select id="editStatus">
+
+                        <option value="Shipment Created">
+                            Shipment Created
+                        </option>
+
+                        <option value="Picked Up">
+                            Picked Up
+                        </option>
+
+                        <option value="In Transit">
+                            In Transit
+                        </option>
+
+                        <option value="Arrived at Facility">
+                            Arrived at Facility
+                        </option>
+
+                        <option value="Out for Delivery">
+                            Out for Delivery
+                        </option>
+
+                        <option value="Delivered">
+                            Delivered
+                        </option>
+
+                        <option value="Custom Hold">
+                            Custom Hold
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div
+                    class="input-group full-width hidden"
+                    id="editCustomStatusGroup"
+                >
+
+                    <label for="editCustomStatus">
+                        Custom Hold Reason
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editCustomStatus"
+                        placeholder="Enter custom hold reason"
+                    >
+
+                </div>
+
+
+
+                <div class="input-group full-width">
+
+                    <label for="editEstimatedDelivery">
+                        Estimated Delivery
+                    </label>
+
+                    <input
+                        type="date"
+                        id="editEstimatedDelivery"
+                    >
+
+                </div>
+
+
+            </div>
+
+
+
+            <div
+                id="editResponse"
+                class="edit-response"
+            ></div>
+
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="cancelEditBtn"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    id="saveEditBtn"
+                    class="save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="admin.js"></script>
+
+</body>
+
+</html>

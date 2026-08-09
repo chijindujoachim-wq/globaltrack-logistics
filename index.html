@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GlobalTrack Logistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="logo.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <!-- FULL PAGE LOADER -->
+<div id="loader">
+
+    <div class="loader-content">
+        <div class="spinner-ring"></div>
+        <img src="logo.jpg" alt="Logo" class="loader-logo">
+        <p>Loading GlobalTrack Logistics...</p>
+    </div>
+
+</div>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <img src="logo.jpg" class="logo">
+            <h2 class="brand-name">GlobalTrack Logistics</h2>
+        </div>
+
+        <div class="nav-right" id="navLinks">
+            <a href="main.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="#">Services</a>
+            <a href="#">More</a>
+        </div>
+
+        <!-- Hamburger -->
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Fast. Reliable. Global.</h1>
+        <p>Your trusted logistics partner for secure and timely deliveries worldwide.</p>
+        <a href="main.html" class="track-btn">Track Shipment</a>
+    </section>
+
+    <section class="about fade-section" id="about">
+        <h2>About GlobalTrack Logistics</h2>
+        <p>
+            GlobalTrack Logistics is a modern shipping and consignment company
+            committed to delivering packages safely and efficiently across
+            cities and continents. With advanced tracking systems and
+            real-time updates, we ensure transparency and reliability
+            throughout your shipment journey.
+        </p>
+    </section>
+
+    <!-- FEATURE HIGHLIGHT SECTION -->
+<section class="highlight-section">
+
+    <h4 class="section-subtitle">Featured</h4>
+    <h2 class="section-title">
+        The unique qualities that make <span>GlobalTrack Logistics</span> exceptional.
+    </h2>
+
+    <div class="highlight-container">
+
+        <div class="highlight-card">
+            <div class="icon">💰</div>
+            <h3>Transparent Pricing</h3>
+            <p>
+                Our pricing model is clear and competitive, ensuring you receive
+                premium logistics services without hidden charges.
+            </p>
+        </div>
+
+        <div class="highlight-card">
+            <div class="icon">📍</div>
+            <h3>Real-Time Tracking</h3>
+            <p>
+                Track your shipments live with advanced tracking systems that
+                provide accurate updates at every stage of delivery.
+            </p>
+        </div>
+
+        <div class="highlight-card">
+            <div class="icon">🏬</div>
+            <h3>Secure Warehousing</h3>
+            <p>
+                Our secure storage facilities ensure your goods remain protected
+                before dispatch and during transit.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- TRANSPORT SECTION -->
+<section class="transport-section">
+
+    <h2 class="transport-title">We Deliver Across Every Route</h2>
+    <p class="transport-subtitle">
+        Reliable transportation solutions by road, sea and air — ensuring your goods
+        reach their destination safely and on time.
+    </p>
+
+    <div class="transport-container">
+
+        <!-- ROAD -->
+        <div class="transport-card">
+            <img src="img55.jpg" alt="Road Delivery">
+            <div class="transport-overlay">
+                <h3>Road Freight</h3>
+                <p>
+                    We provide efficient road transportation services with secure
+                    trucking networks for fast regional and cross-border deliveries.
+                </p>
+            </div>
+        </div>
+
+        <!-- SEA -->
+        <div class="transport-card">
+            <img src="img44.jpg" alt="Sea Delivery">
+            <div class="transport-overlay">
+                <h3>Ocean Freight</h3>
+                <p>
+                    Our sea freight services handle large cargo shipments globally,
+                    offering cost-effective and dependable maritime logistics.
+                </p>
+            </div>
+        </div>
+
+        <!-- AIR -->
+        <div class="transport-card">
+            <img src="img77.jpg" alt="Air Delivery">
+            <div class="transport-overlay">
+                <h3>Air Freight</h3>
+                <p>
+                    When speed matters most, our air freight solutions ensure rapid,
+                    secure delivery across international destinations.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+    
+<!-- COUNTER SECTION -->
+<section class="counter-section">
+    <canvas id="particles"></canvas>
+    <div class="counter-container">
+
+        <div class="counter-box">
+            <div class="counter-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <h2 class="counter" data-target="5000">0</h2>
+            <p>Shipments Delivered</p>
+        </div>
+
+        <div class="counter-box">
+            <div class="counter-icon">
+                <i class="fas fa-globe"></i>
+            </div>
+            <h2 class="counter" data-target="120">0</h2>
+            <p>Countries Covered</p>
+        </div>
+
+        <div class="counter-box">
+            <div class="counter-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h2 class="counter" data-target="98">0</h2>
+            <p>On-Time Delivery %</p>
+        </div>
+
+        <div class="counter-box">
+            <div class="counter-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h2 class="counter" data-target="24">0</h2>
+            <p>Customer Support (24/7)</p>
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- FEATURES SECTION -->
+<section class="features">
+    <h2>Why Choose GlobalTrack</h2>
+
+    <div class="feature-container">
+
+        <div class="feature-card">
+            <img src="img11.jpg" alt="Fast Delivery">
+            <h3>Fast & Reliable Delivery</h3>
+            <p>
+                We ensure timely shipment arrivals with advanced logistics
+                coordination and real-time tracking systems.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <img src="img22.jpg" alt="Global Coverage">
+            <h3>Worldwide Coverage</h3>
+            <p>
+                Our global network allows us to deliver packages safely
+                across continents with full transparency.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <img src="img33.jpg" alt="Secure Handling">
+            <h3>Secure Package Handling</h3>
+            <p>
+                From pickup to final delivery, your goods are handled
+                with professional care and strict safety standards.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<section class="services fade-section" id="services">
+        <h2>Our Services</h2>
+
+        <div class="service-box">
+            <h3>International Shipping</h3>
+            <p>Fast cross-border deliveries with full tracking support.</p>
+        </div>
+
+        <div class="service-box">
+            <h3>Express Delivery</h3>
+            <p>Same-day and next-day delivery services.</p>
+        </div>
+
+        <div class="service-box">
+            <h3>Secure Packaging</h3>
+            <p>Safe handling and professional packaging solutions.</p>
+        </div>
+    </section>
+
+    <!-- FAQ + WHY CHOOSE US SECTION -->
+<section class="faq-section">
+
+    <div class="faq-container">
+
+        <!-- LEFT SIDE - FAQ -->
+        <div class="faq-left">
+            <h4 class="section-tag">Frequently Asked Questions</h4>
+            <h2>Have Any Questions?</h2>
+
+            <!-- FAQ ITEMS -->
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How does GlobalTrack work?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    We receive your shipment request, process it through our logistics network,
+                    assign the best transportation route, and deliver safely to the final destination.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How can I track my shipment?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Simply use the tracking number provided in your confirmation email
+                    on our tracking page to monitor your delivery in real time.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Do you offer international shipping?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes. We provide global air and sea freight services,
+                    covering over 120 countries worldwide.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How secure are your deliveries?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    All shipments are handled with strict security protocols,
+                    professional packaging, and verified logistics partners.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How long does delivery take?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Delivery times depend on destination and method,
+                    but we prioritize fast and on-time service for every shipment.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Do you provide 24/7 customer support?
+                    <span class="faq-icon">+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely. Our support team is available 24/7
+                    to assist you with inquiries and shipment updates.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE - WHY CHOOSE US -->
+        <div class="faq-right">
+            <h4 class="section-tag">Why Choose Us</h4>
+            <h2>Why You Like GlobalTrack Logistics?</h2>
+
+            <div class="why-box">
+                <h3>Fast & Reliable Tracking</h3>
+                <p>
+                    Our advanced tracking system ensures transparency,
+                    accuracy, and real-time updates for every shipment.
+                </p>
+            </div>
+
+            <div class="why-box">
+                <h3>Global Coverage</h3>
+                <p>
+                    With a strong international logistics network,
+                    we connect businesses and individuals across continents.
+                </p>
+            </div>
+
+            <div class="why-box">
+                <h3>Speed & Efficiency</h3>
+                <p>
+                    Time is critical in logistics. We optimize routes
+                    to guarantee timely and dependable delivery services.
+                </p>
+            </div>
+
+            <div class="why-box">
+                <h3>Customer-Centered Service</h3>
+                <p>
+                    We prioritize client satisfaction with 24/7 support
+                    and personalized logistics solutions.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+    <!-- FOOTER -->
+    <footer>
+        © 2026 GlobalTrack Logistics. All Rights Reserved.
+    </footer>
+
+    <script>
+const sections = document.querySelectorAll(".fade-section");
+
+window.addEventListener("scroll", () => {
+    sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;
+        const triggerPoint = window.innerHeight - 100;
+
+        if (sectionTop < triggerPoint) {
+            section.classList.add("active");
+        }
+    });
+});
+</script>
+
+<script>
+window.addEventListener("load", function() {
+    const loader = document.getElementById("loader");
+
+    // Add loading class to body
+    document.body.classList.add("loading");
+
+    // Minimum display time (1 second)
+    const minimumTime = 1000;
+
+    setTimeout(() => {
+        loader.classList.add("hidden");
+
+        // Enable scrolling after loader disappears
+        document.body.classList.remove("loading");
+
+    }, minimumTime);
+});
+</script>
+
+<script>
+const hamburger = document.getElementById("hamburger");
+const navLinks = document.getElementById("navLinks");
+
+hamburger.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
+});
+</script>
+
+<script>
+const counters = document.querySelectorAll('.counter');
+
+const startCounting = (counter) => {
+    const target = +counter.getAttribute('data-target');
+    const duration = 2000;
+    const increment = target / (duration / 20);
+
+    let count = 0;
+
+    const updateCounter = () => {
+        count += increment;
+
+        if (count < target) {
+            counter.innerText = Math.ceil(count);
+            setTimeout(updateCounter, 20);
+        } else {
+            counter.innerText = target + "+";
+        }
+    };
+
+    updateCounter();
+};
+
+// Trigger animation when visible
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            startCounting(entry.target);
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.6 });
+
+counters.forEach(counter => {
+    observer.observe(counter);
+});
+</script>
+
+<script>
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
+
+let particlesArray = [];
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x > canvas.width || this.x < 0) {
+            this.speedX = -this.speedX;
+        }
+
+        if (this.y > canvas.height || this.y < 0) {
+            this.speedY = -this.speedY;
+        }
+    }
+
+    draw() {
+        ctx.fillStyle = "rgba(255, 152, 0, 0.6)";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function initParticles() {
+    particlesArray = [];
+    for (let i = 0; i < 80; i++) {
+        particlesArray.push(new Particle());
+    }
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particlesArray.forEach(particle => {
+        particle.update();
+        particle.draw();
+    });
+
+    requestAnimationFrame(animateParticles);
+}
+
+initParticles();
+animateParticles();
+
+// Resize Fix
+window.addEventListener("resize", () => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    initParticles();
+});
+</script>
+
+<script>
+const faqItems = document.querySelectorAll(".faq-item");
+
+faqItems.forEach(item => {
+    const question = item.querySelector(".faq-question");
+
+    question.addEventListener("click", () => {
+
+        // Close others (optional premium behavior)
+        faqItems.forEach(i => {
+            if(i !== item) {
+                i.classList.remove("active");
+                i.querySelector(".faq-icon").textContent = "+";
+            }
+        });
+
+        item.classList.toggle("active");
+
+        const icon = item.querySelector(".faq-icon");
+
+        if (item.classList.contains("active")) {
+            icon.textContent = "−";
+        } else {
+            icon.textContent = "+";
+        }
+    });
+});
+</script>
+</body>
+</html>
