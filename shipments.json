@@ -278,5 +278,38 @@
         "note": "Initial shipment status recorded."
       }
     ]
+  },
+  {
+    "id": "1786392182185-g83whr",
+    "trackingCode": "GT-DYHU-580444",
+    "senderName": "hhheeee",
+    "receiverName": "cfhfhhfh",
+    "receiverPhone": "09011773424",
+    "customerEmail": "chijindujoachim@gmail.com",
+    "origin": "Canada",
+    "destination": "Mexico",
+    "currentLocation": "canada",
+    "status": "Picked Up",
+    "shipmentType": "International Shipment",
+    "packageName": "BOX",
+    "weight": "100kg",
+    "shippingMethod": "Air Freight",
+    "estimatedDelivery": "2026-08-20",
+    "createdAt": "2026-08-10T20:03:02.185Z",
+    "updatedAt": "2026-08-10T20:03:02.185Z",
+    "history": [
+      {
+        "location": "Canada",
+        "status": "Shipment Created",
+        "date": "2026-08-10T20:03:02.185Z",
+        "note": "Shipment was registered successfully."
+      },
+      {
+        "location": "canada",
+        "status": "Picked Up",
+        "date": "2026-08-10T20:03:02.185Z",
+        "note": "Initial shipment status recorded."
+      }
+    ]
   }
 ]
