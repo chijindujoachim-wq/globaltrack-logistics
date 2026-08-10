@@ -197,6 +197,35 @@ shipmentForm.addEventListener(
         }
 
 
+        /*
+            Customer email is required because
+            the server uses it to send the shipment
+            notification and tracking link.
+        */
+
+        const customerEmail =
+            document
+                .getElementById("customerEmail")
+                .value
+                .trim();
+
+
+        if (!customerEmail) {
+
+            responseBox.innerHTML = `
+                <div class="response-error">
+                    Please enter the customer's email address.
+                </div>
+            `;
+
+            document
+                .getElementById("customerEmail")
+                .focus();
+
+            return;
+        }
+
+
         const shipmentData = {
 
             senderName:
@@ -205,11 +234,21 @@ shipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             receiverName:
                 document
                     .getElementById("receiverName")
                     .value
                     .trim(),
+
+
+            /*
+                NEW CUSTOMER EMAIL FIELD
+            */
+
+            customerEmail:
+                customerEmail,
+
 
             receiverPhone:
                 document
@@ -217,11 +256,13 @@ shipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             origin:
                 document
                     .getElementById("origin")
                     .value
                     .trim(),
+
 
             destination:
                 document
@@ -229,14 +270,17 @@ shipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             currentLocation:
                 document
                     .getElementById("currentLocation")
                     .value
                     .trim(),
 
+
             status:
                 finalStatus,
+
 
             shipmentType:
                 document
@@ -244,11 +288,13 @@ shipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             packageName:
                 document
                     .getElementById("packageName")
                     .value
                     .trim(),
+
 
             weight:
                 document
@@ -256,11 +302,13 @@ shipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             shippingMethod:
                 document
                     .getElementById("shippingMethod")
                     .value
                     .trim(),
+
 
             estimatedDelivery:
                 document
@@ -280,11 +328,13 @@ shipmentForm.addEventListener(
             "loading"
         );
 
+
         responseBox.innerHTML = `
             <div class="response-loading">
                 Registering shipment securely...
             </div>
         `;
+
 
         trackingResult.classList.remove(
             "show"
@@ -330,6 +380,17 @@ shipmentForm.addEventListener(
             */
 
             responseBox.innerHTML = "";
+
+
+            /*
+                Show email result as part of
+                the successful response.
+            */
+
+            const emailMessage =
+                data.emailSent
+                    ? "The customer notification email has been sent successfully."
+                    : "Shipment was created, but the customer notification email could not be sent.";
 
 
             trackingResult.innerHTML = `
@@ -399,6 +460,16 @@ shipmentForm.addEventListener(
 
                         </p>
 
+
+                        <p class="code-help">
+
+                            ${escapeHTML(
+                                emailMessage
+                            )}
+
+                        </p>
+
+
                     </div>
 
                 </div>
@@ -443,9 +514,11 @@ shipmentForm.addEventListener(
 
             shipmentForm.reset();
 
+
             customStatusGroup.classList.add(
                 "hidden"
             );
+
 
             customStatusInput.required =
                 false;
@@ -455,7 +528,7 @@ shipmentForm.addEventListener(
                 Refresh registered shipments
             */
 
-            loadShipments();
+            await loadShipments();
 
 
             /*
@@ -494,6 +567,7 @@ shipmentForm.addEventListener(
 
             `;
 
+
         } finally {
 
             createShipmentBtn.disabled = false;
@@ -501,6 +575,7 @@ shipmentForm.addEventListener(
             createShipmentBtn.classList.remove(
                 "loading"
             );
+
         }
 
     }
@@ -556,13 +631,17 @@ async function copyTrackingCode(
         const textArea =
             document.createElement("textarea");
 
+
         textArea.value = code;
+
 
         document.body.appendChild(
             textArea
         );
 
+
         textArea.select();
+
 
         try {
 
@@ -570,11 +649,13 @@ async function copyTrackingCode(
                 "copy"
             );
 
+
             button.textContent = "✓";
 
             button.classList.add(
                 "copied"
             );
+
 
             setTimeout(() => {
 
@@ -586,6 +667,7 @@ async function copyTrackingCode(
 
             }, 2000);
 
+
         } catch (copyError) {
 
             alert(
@@ -594,9 +676,11 @@ async function copyTrackingCode(
 
         }
 
+
         document.body.removeChild(
             textArea
         );
+
     }
 }
 
@@ -638,6 +722,7 @@ async function loadShipments() {
                 data.message ||
                 "Unable to load shipments."
             );
+
         }
 
 
@@ -700,9 +785,12 @@ async function loadShipments() {
 
         `;
 
+
         shipmentCount.textContent =
             "0 shipments";
+
     }
+
 }
 
 
@@ -726,10 +814,13 @@ function renderShipments(
 
         `;
 
+
         shipmentCount.textContent =
             "0 shipments";
 
+
         return;
+
     }
 
 
@@ -764,16 +855,14 @@ function renderShipments(
                         "Unknown";
 
 
+                    const email =
+                        shipment.customerEmail ||
+                        "";
+
+
                     const status =
                         shipment.status ||
                         "Unknown";
-
-
-                    const updated =
-                        shipment.lastUpdated ||
-                        shipment.updatedAt ||
-                        shipment.createdAt ||
-                        "";
 
 
                     return `
@@ -817,6 +906,22 @@ function renderShipments(
 
                                 <div class="shipment-card-value">
                                     ${escapeHTML(receiver)}
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="shipment-card-label">
+                                    Customer Email
+                                </span>
+
+                                <div class="shipment-card-value">
+                                    ${escapeHTML(
+                                        email ||
+                                        "Not provided"
+                                    )}
                                 </div>
 
                             </div>
@@ -928,6 +1033,7 @@ function renderShipments(
             );
 
         });
+
 }
 
 
@@ -952,6 +1058,7 @@ shipmentSearch.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -963,15 +1070,23 @@ shipmentSearch.addEventListener(
                         shipment.trackingCode ||
                         "";
 
+
                     const sender =
                         shipment.senderName ||
                         shipment.sender?.name ||
                         "";
 
+
                     const receiver =
                         shipment.receiverName ||
                         shipment.receiver?.name ||
                         "";
+
+
+                    const email =
+                        shipment.customerEmail ||
+                        "";
+
 
                     const status =
                         shipment.status ||
@@ -998,6 +1113,12 @@ shipmentSearch.addEventListener(
 
                         ||
 
+                        email
+                            .toLowerCase()
+                            .includes(query)
+
+                        ||
+
                         status
                             .toLowerCase()
                             .includes(query)
@@ -1011,6 +1132,7 @@ shipmentSearch.addEventListener(
         renderShipments(
             filtered
         );
+
     }
 );
 
@@ -1058,6 +1180,17 @@ function openEditModal(
     ).value =
         shipment.receiverName ||
         shipment.receiver?.name ||
+        "";
+
+
+    /*
+        NEW CUSTOMER EMAIL
+    */
+
+    document.getElementById(
+        "editCustomerEmail"
+    ).value =
+        shipment.customerEmail ||
         "";
 
 
@@ -1121,13 +1254,21 @@ function openEditModal(
 
 
     const knownStatuses = [
+
         "Shipment Created",
+
         "Picked Up",
+
         "In Transit",
+
         "Arrived at Facility",
+
         "Out for Delivery",
+
         "Delivered",
+
         "Custom Hold"
+
     ];
 
 
@@ -1144,14 +1285,17 @@ function openEditModal(
         editStatus.value =
             shipmentStatus;
 
+
         document.getElementById(
             "editCustomStatus"
         ).value = "";
+
 
     } else {
 
         editStatus.value =
             "Custom Hold";
+
 
         document.getElementById(
             "editCustomStatus"
@@ -1192,6 +1336,7 @@ function openEditModal(
                     .toISOString()
                     .split("T")[0];
 
+
         } else {
 
             document.getElementById(
@@ -1200,6 +1345,7 @@ function openEditModal(
                 delivery;
 
         }
+
 
     } else {
 
@@ -1220,6 +1366,7 @@ function openEditModal(
 
     document.body.style.overflow =
         "hidden";
+
 }
 
 
@@ -1243,17 +1390,20 @@ function updateEditCustomStatus() {
             "hidden"
         );
 
+
     } else {
 
         editCustomStatusGroup.classList.add(
             "hidden"
         );
 
+
         document.getElementById(
             "editCustomStatus"
         ).value = "";
 
     }
+
 }
 
 
@@ -1267,10 +1417,13 @@ function closeEditModal() {
         "hidden"
     );
 
+
     document.body.style.overflow =
         "";
 
+
     editResponse.innerHTML = "";
+
 }
 
 
@@ -1373,10 +1526,50 @@ editShipmentForm.addEventListener(
                 `;
 
                 return;
+
             }
 
 
             finalStatus = custom;
+
+        }
+
+
+        /*
+            Customer email
+        */
+
+        const customerEmail =
+            document
+                .getElementById(
+                    "editCustomerEmail"
+                )
+                .value
+                .trim();
+
+
+        if (!customerEmail) {
+
+            editResponse.innerHTML = `
+
+                <div class="response-error">
+
+                    Please enter the customer's email address.
+
+                </div>
+
+            `;
+
+
+            document
+                .getElementById(
+                    "editCustomerEmail"
+                )
+                .focus();
+
+
+            return;
+
         }
 
 
@@ -1390,6 +1583,7 @@ editShipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             receiverName:
                 document
                     .getElementById(
@@ -1397,6 +1591,15 @@ editShipmentForm.addEventListener(
                     )
                     .value
                     .trim(),
+
+
+            /*
+                NEW CUSTOMER EMAIL
+            */
+
+            customerEmail:
+                customerEmail,
+
 
             receiverPhone:
                 document
@@ -1406,6 +1609,7 @@ editShipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             origin:
                 document
                     .getElementById(
@@ -1413,6 +1617,7 @@ editShipmentForm.addEventListener(
                     )
                     .value
                     .trim(),
+
 
             destination:
                 document
@@ -1422,6 +1627,7 @@ editShipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             currentLocation:
                 document
                     .getElementById(
@@ -1429,6 +1635,7 @@ editShipmentForm.addEventListener(
                     )
                     .value
                     .trim(),
+
 
             shipmentType:
                 document
@@ -1438,6 +1645,7 @@ editShipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             packageName:
                 document
                     .getElementById(
@@ -1445,6 +1653,7 @@ editShipmentForm.addEventListener(
                     )
                     .value
                     .trim(),
+
 
             weight:
                 document
@@ -1454,6 +1663,7 @@ editShipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             shippingMethod:
                 document
                     .getElementById(
@@ -1462,8 +1672,10 @@ editShipmentForm.addEventListener(
                     .value
                     .trim(),
 
+
             status:
                 finalStatus,
+
 
             estimatedDelivery:
                 document
@@ -1472,10 +1684,12 @@ editShipmentForm.addEventListener(
                     )
                     .value
                     .trim()
+
         };
 
 
         saveEditBtn.disabled = true;
+
 
         saveEditBtn.textContent =
             "Saving Changes...";
@@ -1512,6 +1726,7 @@ editShipmentForm.addEventListener(
                             JSON.stringify(
                                 updateData
                             )
+
                     }
                 );
 
@@ -1526,6 +1741,7 @@ editShipmentForm.addEventListener(
                     data.message ||
                     "Unable to update shipment."
                 );
+
             }
 
 
@@ -1539,8 +1755,8 @@ editShipmentForm.addEventListener(
 
                     <br>
 
-                    The new status and update have
-                    been added to the shipment history.
+                    The new shipment information
+                    has been saved successfully.
 
                 </div>
 
@@ -1586,12 +1802,15 @@ editShipmentForm.addEventListener(
 
             `;
 
+
         } finally {
 
             saveEditBtn.disabled = false;
 
+
             saveEditBtn.textContent =
                 "Save Changes";
+
         }
 
     }

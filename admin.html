@@ -27,15 +27,11 @@
 
 </head>
 
-
 <body>
-
 
 <main class="admin-page">
 
-
     <section class="dashboard">
-
 
         <!-- =========================================
              DASHBOARD HEADER
@@ -64,7 +60,6 @@
 
             </div>
 
-
             <div class="admin-badge">
 
                 <span class="status-dot"></span>
@@ -76,13 +71,11 @@
         </header>
 
 
-
         <!-- =========================================
              CREATE SHIPMENT SECTION
         ========================================== -->
 
         <section class="create-section">
-
 
             <div class="form-header">
 
@@ -105,7 +98,6 @@
                 </div>
 
             </div>
-
 
 
             <form id="shipmentForm">
@@ -146,7 +138,6 @@
                         </div>
 
 
-
                         <div class="input-group">
 
                             <label for="receiverName">
@@ -164,8 +155,31 @@
                         </div>
 
 
+                        <!-- CUSTOMER EMAIL -->
 
-                        <div class="input-group full-width">
+                        <div class="input-group">
+
+                            <label for="customerEmail">
+                                Customer Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="customerEmail"
+                                placeholder="customer@example.com"
+                                autocomplete="email"
+                                required
+                            >
+
+                            <small>
+                                The shipment notification and tracking link
+                                will be sent to this email address.
+                            </small>
+
+                        </div>
+
+
+                        <div class="input-group">
 
                             <label for="receiverPhone">
                                 Receiver Phone
@@ -185,7 +199,6 @@
                     </div>
 
                 </div>
-
 
 
                 <!-- =====================================
@@ -247,7 +260,6 @@
                         </div>
 
 
-
                         <div class="input-group">
 
                             <label for="packageName">
@@ -263,7 +275,6 @@
                         </div>
 
 
-
                         <div class="input-group">
 
                             <label for="packageWeight">
@@ -277,7 +288,6 @@
                             >
 
                         </div>
-
 
 
                         <div class="input-group">
@@ -318,7 +328,6 @@
                 </div>
 
 
-
                 <!-- =====================================
                      ROUTE
                 ====================================== -->
@@ -353,7 +362,6 @@
                         </div>
 
 
-
                         <div class="input-group">
 
                             <label for="destination">
@@ -368,7 +376,6 @@
                             >
 
                         </div>
-
 
 
                         <div class="input-group full-width">
@@ -390,7 +397,6 @@
                     </div>
 
                 </div>
-
 
 
                 <!-- =====================================
@@ -459,7 +465,6 @@
                         </div>
 
 
-
                         <!-- CUSTOM HOLD -->
 
                         <div
@@ -488,7 +493,6 @@
                     </div>
 
                 </div>
-
 
 
                 <!-- =====================================
@@ -528,7 +532,6 @@
                 </div>
 
 
-
                 <!-- =====================================
                      SUBMIT
                 ====================================== -->
@@ -557,7 +560,6 @@
             </form>
 
 
-
             <!-- =========================================
                  RESPONSE
             ========================================== -->
@@ -567,7 +569,6 @@
                 class="response"
                 aria-live="polite"
             ></div>
-
 
 
             <!-- =========================================
@@ -583,13 +584,11 @@
         </section>
 
 
-
         <!-- =========================================
              REGISTERED SHIPMENTS
         ========================================== -->
 
         <section class="registered-section">
-
 
             <div class="registered-header">
 
@@ -619,8 +618,8 @@
                     ↻ Refresh
                 </button>
 
-            </div>
 
+            </div>
 
 
             <!-- SEARCH -->
@@ -630,11 +629,10 @@
                 <input
                     type="search"
                     id="shipmentSearch"
-                    placeholder="Search tracking code, sender or receiver..."
+                    placeholder="Search tracking code, sender, receiver or email..."
                 >
 
             </div>
-
 
 
             <!-- SHIPMENT COUNT -->
@@ -646,7 +644,6 @@
                 </span>
 
             </div>
-
 
 
             <!-- SHIPMENT LIST -->
@@ -672,9 +669,7 @@
 
     </section>
 
-
 </main>
-
 
 
 <!-- =============================================
@@ -685,7 +680,6 @@
     id="editModal"
     class="modal-overlay hidden"
 >
-
 
     <div class="edit-modal">
 
@@ -718,8 +712,8 @@
                 ×
             </button>
 
-        </div>
 
+        </div>
 
 
         <form id="editShipmentForm">
@@ -749,7 +743,6 @@
                 </div>
 
 
-
                 <div class="input-group">
 
                     <label for="editReceiverName">
@@ -765,8 +758,30 @@
                 </div>
 
 
+                <!-- EDIT CUSTOMER EMAIL -->
 
-                <div class="input-group full-width">
+                <div class="input-group">
+
+                    <label for="editCustomerEmail">
+                        Customer Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="editCustomerEmail"
+                        placeholder="customer@example.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <small>
+                        Used for shipment email notifications.
+                    </small>
+
+                </div>
+
+
+                <div class="input-group">
 
                     <label for="editReceiverPhone">
                         Receiver Phone
@@ -779,7 +794,6 @@
                     >
 
                 </div>
-
 
 
                 <div class="input-group">
@@ -797,7 +811,6 @@
                 </div>
 
 
-
                 <div class="input-group">
 
                     <label for="editDestination">
@@ -811,7 +824,6 @@
                     >
 
                 </div>
-
 
 
                 <div class="input-group full-width">
@@ -829,7 +841,6 @@
                 </div>
 
 
-
                 <div class="input-group">
 
                     <label for="editShipmentType">
@@ -842,7 +853,6 @@
                     >
 
                 </div>
-
 
 
                 <div class="input-group">
@@ -859,7 +869,6 @@
                 </div>
 
 
-
                 <div class="input-group">
 
                     <label for="editWeight">
@@ -874,7 +883,6 @@
                 </div>
 
 
-
                 <div class="input-group">
 
                     <label for="editShippingMethod">
@@ -887,7 +895,6 @@
                     >
 
                 </div>
-
 
 
                 <div class="input-group full-width">
@@ -931,7 +938,6 @@
                 </div>
 
 
-
                 <div
                     class="input-group full-width hidden"
                     id="editCustomStatusGroup"
@@ -948,7 +954,6 @@
                     >
 
                 </div>
-
 
 
                 <div class="input-group full-width">
@@ -968,12 +973,10 @@
             </div>
 
 
-
             <div
                 id="editResponse"
                 class="edit-response"
             ></div>
-
 
 
             <div class="modal-actions">
@@ -985,6 +988,7 @@
                 >
                     Cancel
                 </button>
+
 
                 <button
                     type="submit"
@@ -1003,7 +1007,6 @@
     </div>
 
 </div>
-
 
 
 <script src="admin.js"></script>

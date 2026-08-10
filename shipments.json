@@ -179,5 +179,104 @@
         "note": "Initial shipment status recorded."
       }
     ]
+  },
+  {
+    "id": "1786374739897-h0d0il",
+    "trackingCode": "GT-EVJG-883840",
+    "senderName": "joachim",
+    "receiverName": "chijindu",
+    "receiverPhone": "09011773424",
+    "customerEmail": "chijindujoachim@gmail.com",
+    "origin": "California",
+    "destination": "Canada",
+    "currentLocation": "California",
+    "status": "Out for Delivery",
+    "shipmentType": "General Cargo",
+    "packageName": "BOX",
+    "weight": "100kg",
+    "shippingMethod": "Air Freight",
+    "estimatedDelivery": "2026-08-20",
+    "createdAt": "2026-08-10T15:12:19.897Z",
+    "updatedAt": "2026-08-10T15:12:19.897Z",
+    "history": [
+      {
+        "location": "California",
+        "status": "Shipment Created",
+        "date": "2026-08-10T15:12:19.897Z",
+        "note": "Shipment was registered successfully."
+      },
+      {
+        "location": "California",
+        "status": "Out for Delivery",
+        "date": "2026-08-10T15:12:19.897Z",
+        "note": "Initial shipment status recorded."
+      }
+    ]
+  },
+  {
+    "id": "1786375533282-qto65p",
+    "trackingCode": "GT-SQFO-982007",
+    "senderName": "Amos",
+    "receiverName": "kings",
+    "receiverPhone": "09011773424",
+    "customerEmail": "chijindujoachim@gmail.com",
+    "origin": "California",
+    "destination": "Canada",
+    "currentLocation": "California",
+    "status": "Picked Up",
+    "shipmentType": "Express Shipment",
+    "packageName": "BOX",
+    "weight": "100kg",
+    "shippingMethod": "Air Freight",
+    "estimatedDelivery": "2026-08-20",
+    "createdAt": "2026-08-10T15:25:33.282Z",
+    "updatedAt": "2026-08-10T15:25:33.282Z",
+    "history": [
+      {
+        "location": "California",
+        "status": "Shipment Created",
+        "date": "2026-08-10T15:25:33.282Z",
+        "note": "Shipment was registered successfully."
+      },
+      {
+        "location": "California",
+        "status": "Picked Up",
+        "date": "2026-08-10T15:25:33.282Z",
+        "note": "Initial shipment status recorded."
+      }
+    ]
+  },
+  {
+    "id": "1786376170021-06zg0a",
+    "trackingCode": "GT-YSLY-927627",
+    "senderName": "johnf",
+    "receiverName": "dfggst",
+    "receiverPhone": "09011773424",
+    "customerEmail": "chijindujoachim@gmail.com",
+    "origin": "California",
+    "destination": "Canada",
+    "currentLocation": "California",
+    "status": "Picked Up",
+    "shipmentType": "International Shipment",
+    "packageName": "BOX",
+    "weight": "100kg",
+    "shippingMethod": "Air Freight",
+    "estimatedDelivery": "2026-08-20",
+    "createdAt": "2026-08-10T15:36:10.021Z",
+    "updatedAt": "2026-08-10T15:36:10.021Z",
+    "history": [
+      {
+        "location": "California",
+        "status": "Shipment Created",
+        "date": "2026-08-10T15:36:10.021Z",
+        "note": "Shipment was registered successfully."
+      },
+      {
+        "location": "California",
+        "status": "Picked Up",
+        "date": "2026-08-10T15:36:10.021Z",
+        "note": "Initial shipment status recorded."
+      }
+    ]
   }
 ]
