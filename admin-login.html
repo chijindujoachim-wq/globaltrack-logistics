@@ -1,65 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.jpg">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <title>Admin - GlobalTrack Logistics</title>
-    <link rel="stylesheet" href="login.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="logo.jpg"
+    >
+
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="favicon.svg"
+    >
+
+    <title>Admin Login - GlobalTrack Logistics</title>
+
+    <link
+        rel="stylesheet"
+        href="login.css"
+    >
+
 </head>
+
+
 <body>
-    <!-- Background Particles -->
+
+
+    <!-- =====================================================
+         BACKGROUND PARTICLES
+    ====================================================== -->
+
     <div id="particles-js"></div>
 
-    <!-- Admin Badge -->
+
+
+    <!-- =====================================================
+         ADMIN BADGE
+    ====================================================== -->
+
     <div class="admin-badge">
-        <span>🛡 Admin Portal</span>
+
+        <span>
+            🛡 Admin Portal
+        </span>
+
     </div>
+
+
+
+    <!-- =====================================================
+         AUTH CONTAINER
+    ====================================================== -->
+
     <div class="auth-container">
+
         <div class="auth-box">
+
+
+            <!-- =================================================
+                 LOGO
+            ================================================== -->
+
             <div class="auth-logo">
-    <img src="logo.jpg" alt="GlobalTrack Logo">
-</div>
-            <h1>Login</h1>
-            <div id="message" class="message-box"></div>
-            <form id="loginForm">
+
+                <img
+                    src="logo.jpg"
+                    alt="GlobalTrack Logistics Logo"
+                >
+
+            </div>
+
+
+
+            <!-- =================================================
+                 TITLE
+            ================================================== -->
+
+            <h1>
+                Login
+            </h1>
+
+
+
+            <!-- =================================================
+                 LOGIN MESSAGE
+            ================================================== -->
+
+            <div
+                id="message"
+                class="message-box"
+                role="alert"
+                aria-live="polite"
+            ></div>
+
+
+
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================== -->
+
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
+
+
+                <!-- =============================================
+                     EMAIL
+                ============================================== -->
+
                 <div class="form-group floating">
-                    <input type="email" id="email" required>
-                    <label for="email">Email</label>
-                </div>
-                <div class="form-group floating password-group">
-                    <input type="password" id="password" required>
-                    <label for="password">Password</label>
 
-                    <span class="toggle-password" id="togglePassword">
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        autocomplete="username"
+                        required
+                    >
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     PASSWORD
+                ============================================== -->
+
+                <div
+                    class="form-group floating password-group"
+                >
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <label for="password">
+                        Password
+                    </label>
+
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        id="togglePassword"
+                        aria-label="Show password"
+                        aria-pressed="false"
+                    >
                         👁
-                    </span>
+                    </button>
 
                 </div>
+
+
+
+                <!-- =============================================
+                     FORGOT PASSWORD
+                ============================================== -->
 
                 <p class="forgot-password">
-                    <a href="forgot-password.html" id="forgotPasswordLink">Forgot Password?</a>
+
+                    <a
+                        href="forgot-password.html"
+                        id="forgotPasswordLink"
+                    >
+                        Forgot Password?
+                    </a>
+
                 </p>
+
+
+
+                <!-- =============================================
+                     REMEMBER ME
+                ============================================== -->
+
                 <div class="remember-clean">
-                    <input type="checkbox" id="rememberMe">
-                    <label for="rememberMe">Remember Me</label>
+
+                    <input
+                        type="checkbox"
+                        id="rememberMe"
+                        name="rememberMe"
+                    >
+
+                    <label for="rememberMe">
+                        Remember Me
+                    </label>
+
                 </div>
-                <button type="submit" class="btn-primary" id="loginBtn">
-                    <span class="btn-text">Login</span>
-                    <span class="btn-loader"></span>
+
+
+
+                <!-- =============================================
+                     LOGIN BUTTON
+                ============================================== -->
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    id="loginBtn"
+                >
+
+                    <span class="btn-text">
+                        Login
+                    </span>
+
+                    <span
+                        class="btn-loader"
+                    ></span>
+
                 </button>
-                <p class="auth-links">
-                New here?<a href="admin-register.html">Sign up</a>
-            </p>
+
+
             </form>
+
+
         </div>
+
     </div>
 
-    <script src="login.js"></script>         
+
+
+    <!-- =====================================================
+         LOGIN JAVASCRIPT
+    ====================================================== -->
+
+    <script src="login.js"></script>
+
+
+
+    <!-- =====================================================
+         PARTICLES.JS
+    ====================================================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+
     <script>
-    particlesJS.load('particles-js', 'particles.json');
+
+        if (typeof particlesJS !== "undefined") {
+
+            particlesJS.load(
+                "particles-js",
+                "particles.json"
+            );
+
+        }
+
     </script>
+
+
 </body>
+
 </html>
