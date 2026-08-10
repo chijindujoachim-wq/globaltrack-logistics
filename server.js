@@ -5,9 +5,59 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+
 const PORT = process.env.PORT || 5000;
+
+// =========================================================
+// MIDDLEWARE
+// =========================================================
+
+app.use(
+
+    cors({
+
+        origin:
+            process.env.FRONTEND_URL,
+
+        credentials:
+            true
+
+    })
+
+);
+
+
+app.use(
+    express.json({
+
+        limit:
+            "2mb"
+
+    })
+);
+
+
+app.use(
+    express.urlencoded({
+
+        extended:
+            true,
+
+        limit:
+            "2mb"
+
+    })
+);
+
+
+app.use(
+    cookieParser()
+);
 
 
 // =========================================================
@@ -25,14 +75,70 @@ const TRACKING_BASE_URL =
     process.env.TRACKING_BASE_URL ||
     "https://dainty-kangaroo-8ed656.netlify.app";
 
+
+// =========================================================
+// ADMIN AUTHENTICATION CONFIGURATION
+// =========================================================
+
+const ADMIN_EMAIL =
+    process.env.ADMIN_EMAIL;
+
+const ADMIN_PASSWORD_HASH =
+    process.env.ADMIN_PASSWORD_HASH;
+
+const JWT_SECRET =
+    process.env.JWT_SECRET;
+
+const ADMIN_COOKIE_NAME =
+    "globaltrack_admin_token";
+
+
+// =========================================================
+// SECURITY CHECK
+// =========================================================
+
+if (!ADMIN_EMAIL) {
+
+    console.warn(
+        "WARNING: ADMIN_EMAIL environment variable is not configured."
+    );
+
+}
+
+if (!ADMIN_PASSWORD_HASH) {
+
+    console.warn(
+        "WARNING: ADMIN_PASSWORD_HASH environment variable is not configured."
+    );
+
+}
+
+if (!JWT_SECRET) {
+
+    console.warn(
+        "WARNING: JWT_SECRET environment variable is not configured."
+    );
+
+}
+
+
+// =========================================================
+// EMAIL TRANSPORTER
+// =========================================================
+
 const mailTransporter =
     nodemailer.createTransport({
+
         service: "gmail",
 
         auth: {
+
             user: EMAIL_USER,
+
             pass: EMAIL_PASSWORD
+
         }
+
     });
 
 
@@ -43,333 +149,491 @@ const mailTransporter =
 function escapeEmailHTML(value) {
 
     return String(value ?? "")
+
         .replace(/&/g, "&amp;")
+
         .replace(/</g, "&lt;")
+
         .replace(/>/g, "&gt;")
+
         .replace(/"/g, "&quot;")
+
         .replace(/'/g, "&#039;");
+
 }
 
 
 // =========================================================
-// SEND SHIPMENT EMAIL
+// ADMIN JWT TOKEN
 // =========================================================
 
-async function sendShipmentEmail(shipment) {
+function createAdminToken() {
 
-    if (!shipment.customerEmail) {
+    if (!JWT_SECRET) {
 
-        console.warn(
-            `No customer email provided for ${shipment.trackingCode}.`
+        throw new Error(
+            "JWT_SECRET is not configured."
         );
 
-        return false;
     }
 
-    if (!EMAIL_PASSWORD) {
 
-        console.error(
-            "EMAIL_PASSWORD environment variable is not configured."
+    return jwt.sign(
+
+        {
+            role: "admin",
+
+            email:
+                ADMIN_EMAIL
+
+        },
+
+        JWT_SECRET,
+
+        {
+            expiresIn: "8h"
+        }
+
+    );
+
+}
+
+
+// =========================================================
+// GET ADMIN TOKEN
+// =========================================================
+
+function getAdminToken(req) {
+
+    // First check HTTP-only cookie
+
+    if (
+        req.cookies &&
+        req.cookies[ADMIN_COOKIE_NAME]
+    ) {
+
+        return req.cookies[
+            ADMIN_COOKIE_NAME
+        ];
+
+    }
+
+
+    // Also support Authorization header
+
+    const authorization =
+        req.headers.authorization;
+
+
+    if (
+        authorization &&
+        authorization.startsWith(
+            "Bearer "
+        )
+    ) {
+
+        return authorization.substring(
+            7
         );
 
-        return false;
     }
 
-    const trackingLink =
-        `${TRACKING_BASE_URL}/track.html?code=${encodeURIComponent(
-            shipment.trackingCode
-        )}`;
+
+    return null;
+
+}
 
 
-    const mailOptions = {
+// =========================================================
+// ADMIN AUTHENTICATION MIDDLEWARE
+// =========================================================
 
-        from:
-            `"GlobalTrack Logistics" <${EMAIL_USER}>`,
-
-        to:
-            shipment.customerEmail,
-
-        subject:
-            `Shipment Registered - ${shipment.trackingCode}`,
-
-        text:
-`Hello ${shipment.receiverName},
-
-Your shipment has been successfully registered with GlobalTrack Logistics.
-
-Shipment Details
-----------------
-Tracking Number: ${shipment.trackingCode}
-Sender: ${shipment.senderName}
-Origin: ${shipment.origin}
-Destination: ${shipment.destination}
-Current Location: ${shipment.currentLocation}
-Status: ${shipment.status}
-Estimated Delivery: ${shipment.estimatedDelivery || "Not provided"}
-
-You can track your shipment here:
-
-${trackingLink}
-
-Thank you for choosing GlobalTrack Logistics.
-`,
-
-        html:
-`
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-</head>
-
-<body style="
-    margin:0;
-    padding:0;
-    background:#f4f6f8;
-    font-family:Arial,Helvetica,sans-serif;
-">
-
-    <div style="
-        max-width:620px;
-        margin:30px auto;
-        background:#ffffff;
-        border-radius:12px;
-        overflow:hidden;
-        box-shadow:0 4px 18px rgba(0,0,0,0.08);
-    ">
-
-        <div style="
-            background:#111827;
-            padding:28px;
-            text-align:center;
-        ">
-
-            <h1 style="
-                margin:0;
-                color:#ffffff;
-                font-size:25px;
-            ">
-                GlobalTrack Logistics
-            </h1>
-
-            <p style="
-                margin:8px 0 0;
-                color:#d1d5db;
-                font-size:14px;
-            ">
-                Shipment Tracking Notification
-            </p>
-
-        </div>
-
-
-        <div style="
-            padding:32px;
-        ">
-
-            <h2 style="
-                margin-top:0;
-                color:#111827;
-            ">
-                Hello ${escapeEmailHTML(shipment.receiverName)},
-            </h2>
-
-
-            <p style="
-                color:#4b5563;
-                line-height:1.7;
-            ">
-                Your shipment has been successfully registered
-                with GlobalTrack Logistics.
-            </p>
-
-
-            <div style="
-                background:#f8fafc;
-                border:1px solid #e5e7eb;
-                border-radius:10px;
-                padding:20px;
-                margin:24px 0;
-            ">
-
-                <h3 style="
-                    margin-top:0;
-                    color:#111827;
-                ">
-                    Shipment Details
-                </h3>
-
-
-                <p>
-                    <strong>Tracking Number:</strong>
-                    ${escapeEmailHTML(shipment.trackingCode)}
-                </p>
-
-
-                <p>
-                    <strong>Sender:</strong>
-                    ${escapeEmailHTML(shipment.senderName)}
-                </p>
-
-
-                <p>
-                    <strong>Origin:</strong>
-                    ${escapeEmailHTML(shipment.origin)}
-                </p>
-
-
-                <p>
-                    <strong>Destination:</strong>
-                    ${escapeEmailHTML(shipment.destination)}
-                </p>
-
-
-                <p>
-                    <strong>Current Location:</strong>
-                    ${escapeEmailHTML(shipment.currentLocation)}
-                </p>
-
-
-                <p>
-                    <strong>Status:</strong>
-                    ${escapeEmailHTML(shipment.status)}
-                </p>
-
-
-                <p>
-                    <strong>Estimated Delivery:</strong>
-                    ${escapeEmailHTML(
-                        shipment.estimatedDelivery ||
-                        "Not provided"
-                    )}
-                </p>
-
-            </div>
-
-
-            <div style="
-                text-align:center;
-                margin:30px 0;
-            ">
-
-                <a
-                    href="${trackingLink}"
-                    style="
-                        display:inline-block;
-                        background:#111827;
-                        color:#ffffff;
-                        text-decoration:none;
-                        padding:14px 26px;
-                        border-radius:7px;
-                        font-weight:bold;
-                    "
-                >
-                    Track Your Shipment
-                </a>
-
-            </div>
-
-
-            <p style="
-                color:#6b7280;
-                font-size:13px;
-                line-height:1.6;
-            ">
-                You can use the tracking button above to view
-                the latest information about your shipment.
-            </p>
-
-        </div>
-
-
-        <div style="
-            background:#f8fafc;
-            border-top:1px solid #e5e7eb;
-            padding:20px;
-            text-align:center;
-        ">
-
-            <p style="
-                margin:0;
-                color:#6b7280;
-                font-size:12px;
-            ">
-                © 2026 GlobalTrack Logistics.
-                All Rights Reserved.
-            </p>
-
-        </div>
-
-    </div>
-
-</body>
-
-</html>
-`
-    };
-
+function requireAdminAuth(
+    req,
+    res,
+    next
+) {
 
     try {
 
-        const result =
-            await mailTransporter.sendMail(
-                mailOptions
+        if (!JWT_SECRET) {
+
+            return res.status(500).json({
+
+                message:
+                    "Server authentication is not configured."
+
+            });
+
+        }
+
+
+        const token =
+            getAdminToken(req);
+
+
+        if (!token) {
+
+            return res.status(401).json({
+
+                message:
+                    "Authentication required."
+
+            });
+
+        }
+
+
+        const decoded =
+            jwt.verify(
+                token,
+                JWT_SECRET
             );
 
-        console.log(
-            `Shipment email sent successfully to ${shipment.customerEmail}`
-        );
 
-        console.log(
-            `Email message ID: ${result.messageId}`
-        );
+        if (
+            !decoded ||
+            decoded.role !== "admin"
+        ) {
 
-        return true;
+            return res.status(403).json({
+
+                message:
+                    "Administrator access required."
+
+            });
+
+        }
+
+
+        req.admin = {
+
+            email:
+                decoded.email,
+
+            role:
+                decoded.role
+
+        };
+
+
+        next();
 
     } catch (error) {
 
-        console.error(
-            "Shipment email failed:",
-            error
-        );
+        if (
+            error.name ===
+            "TokenExpiredError"
+        ) {
 
-        return false;
+            return res.status(401).json({
+
+                message:
+                    "Your admin session has expired. Please log in again."
+
+            });
+
+        }
+
+
+        return res.status(401).json({
+
+            message:
+                "Invalid authentication session."
+
+        });
+
     }
+
 }
 
 
 // =========================================================
-// MIDDLEWARE
+// ADMIN AUTHENTICATION ROUTES
 // =========================================================
 
-app.use(cors());
 
-app.use(
-    express.json({
-        limit: "2mb"
-    })
+// ---------------------------------------------------------
+// ADMIN LOGIN
+// ---------------------------------------------------------
+
+app.post(
+    "/api/admin/login",
+    async (req, res) => {
+
+        try {
+
+            const email =
+                clean(
+                    req.body.email
+                ).toLowerCase();
+
+
+            const password =
+                String(
+                    req.body.password || ""
+                );
+
+
+            // =================================================
+            // SERVER CONFIGURATION CHECK
+            // =================================================
+
+            if (
+                !ADMIN_EMAIL ||
+                !ADMIN_PASSWORD_HASH ||
+                !JWT_SECRET
+            ) {
+
+                console.error(
+                    "Admin authentication environment variables are incomplete."
+                );
+
+
+                return res.status(500).json({
+
+                    message:
+                        "Admin authentication is not properly configured on the server."
+
+                });
+
+            }
+
+
+            // =================================================
+            // EMAIL CHECK
+            // =================================================
+
+            if (
+                email !==
+                ADMIN_EMAIL.toLowerCase()
+            ) {
+
+                return res.status(401).json({
+
+                    message:
+                        "Invalid administrator email or password."
+
+                });
+
+            }
+
+
+            // =================================================
+            // PASSWORD CHECK
+            // =================================================
+
+            const passwordMatches =
+                await bcrypt.compare(
+                    password,
+                    ADMIN_PASSWORD_HASH
+                );
+
+
+            if (!passwordMatches) {
+
+                return res.status(401).json({
+
+                    message:
+                        "Invalid administrator email or password."
+
+                });
+
+            }
+
+
+            // =================================================
+            // CREATE JWT
+            // =================================================
+
+            const token =
+                createAdminToken();
+
+
+            // =================================================
+            // STORE TOKEN IN HTTP-ONLY COOKIE
+            // =================================================
+
+            res.cookie(
+
+                ADMIN_COOKIE_NAME,
+
+                token,
+
+                {
+
+                    httpOnly: true,
+
+                    secure:
+                        process.env.NODE_ENV ===
+                        "production",
+
+                    sameSite:
+                         process.env.NODE_ENV === "production"
+                         ? "none"
+                         : "lax",
+
+                    maxAge:
+                        8 * 60 * 60 * 1000,
+
+                    path: "/"
+
+                }
+
+            );
+
+
+            console.log(
+                `Administrator logged in: ${email}`
+            );
+
+
+            return res.status(200).json({
+
+                message:
+                    "Administrator login successful.",
+
+                authenticated:
+                    true,
+
+                admin: {
+
+                    email:
+                        ADMIN_EMAIL,
+
+                    role:
+                        "admin"
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Admin login error:",
+                error
+            );
+
+
+            return res.status(500).json({
+
+                message:
+                    "Server error during administrator login."
+
+            });
+
+        }
+
+    }
+
 );
 
-app.use(
-    express.urlencoded({
-        extended: true,
-        limit: "2mb"
-    })
+
+// ---------------------------------------------------------
+// ADMIN LOGOUT
+// ---------------------------------------------------------
+
+app.post(
+    "/api/admin/logout",
+    (req, res) => {
+
+        try {
+
+            res.clearCookie(
+
+                ADMIN_COOKIE_NAME,
+
+                {
+
+                    httpOnly: true,
+
+                    secure:
+                        process.env.NODE_ENV ===
+                        "production",
+
+                    sameSite:
+                        process.env.NODE_ENV === "production"
+                        ? "none"
+                        : "lax",
+
+                    path: "/"
+
+                }
+
+            );
+
+
+            return res.status(200).json({
+
+                message:
+                    "Administrator logged out successfully.",
+
+                authenticated:
+                    false
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Admin logout error:",
+                error
+            );
+
+
+            return res.status(500).json({
+
+                message:
+                    "Unable to log out administrator."
+
+            });
+
+        }
+
+    }
+
 );
 
 
-// Serve website files
+// ---------------------------------------------------------
+// CHECK ADMIN SESSION
+// ---------------------------------------------------------
+
+app.get(
+    "/api/admin/me",
+    requireAdminAuth,
+    (req, res) => {
+
+        return res.status(200).json({
+
+            authenticated:
+                true,
+
+            admin: {
+
+                email:
+                    req.admin.email,
+
+                role:
+                    req.admin.role
+
+            }
+
+        });
+
+    }
+
+);
+
+// =========================================================
+// SERVE WEBSITE FILES
+// =========================================================
+
 app.use(
-    express.static(__dirname)
+    express.static(
+        __dirname
+    )
 );
 
 
@@ -392,42 +656,66 @@ function loadShipments() {
 
     try {
 
-        if (!fs.existsSync(shipmentsFile)) {
+        if (
+            !fs.existsSync(
+                shipmentsFile
+            )
+        ) {
 
             fs.writeFileSync(
+
                 shipmentsFile,
+
                 "[]",
+
                 "utf8"
+
             );
 
+
             return [];
+
         }
 
 
         const data =
             fs.readFileSync(
+
                 shipmentsFile,
+
                 "utf8"
+
             );
 
 
-        if (!data.trim()) {
+        if (
+            !data.trim()
+        ) {
 
             return [];
+
         }
 
 
         const shipments =
-            JSON.parse(data);
+            JSON.parse(
+                data
+            );
 
 
-        if (!Array.isArray(shipments)) {
+        if (
+            !Array.isArray(
+                shipments
+            )
+        ) {
 
             console.warn(
                 "shipments.json does not contain an array. Resetting database."
             );
 
+
             return [];
+
         }
 
 
@@ -440,12 +728,17 @@ function loadShipments() {
             error
         );
 
+
         return [];
+
     }
+
 }
 
 
-function saveShipments(shipments) {
+function saveShipments(
+    shipments
+) {
 
     try {
 
@@ -454,19 +747,26 @@ function saveShipments(shipments) {
 
 
         fs.writeFileSync(
+
             temporaryFile,
+
             JSON.stringify(
                 shipments,
                 null,
                 2
             ),
+
             "utf8"
+
         );
 
 
         fs.renameSync(
+
             temporaryFile,
+
             shipmentsFile
+
         );
 
 
@@ -479,8 +779,11 @@ function saveShipments(shipments) {
             error
         );
 
+
         return false;
+
     }
+
 }
 
 
@@ -496,22 +799,32 @@ function clean(value) {
     ) {
 
         return "";
+
     }
 
 
-    return String(value).trim();
+    return String(
+        value
+    ).trim();
+
 }
 
 
-function normalizeTrackingCode(code) {
+function normalizeTrackingCode(
+    code
+) {
 
-    return clean(code).toUpperCase();
+    return clean(
+        code
+    ).toUpperCase();
+
 }
 
 
 function getCurrentDate() {
 
     return new Date().toISOString();
+
 }
 
 
@@ -538,62 +851,91 @@ const VALID_STATUSES = [
 ];
 
 
-function normalizeStatus(status) {
+function normalizeStatus(
+    status
+) {
 
     const value =
-        clean(status);
+        clean(
+            status
+        );
 
 
     if (!value) {
 
         return "";
+
     }
 
 
     const found =
         VALID_STATUSES.find(
+
             item =>
                 item.toLowerCase() ===
                 value.toLowerCase()
+
         );
 
 
     return found || value;
+
 }
 
 
-function getProgress(status) {
+function getProgress(
+    status
+) {
 
     const value =
-        clean(status).toLowerCase();
+        clean(
+            status
+        ).toLowerCase();
 
 
     switch (value) {
 
         case "shipment created":
+
             return 10;
 
+
         case "picked up":
+
             return 25;
 
+
         case "in transit":
+
             return 50;
+
 
         case "arrived at facility":
+
             return 65;
 
+
         case "out for delivery":
+
             return 85;
 
+
         case "delivered":
+
             return 100;
 
+
         case "custom hold":
+
             return 45;
 
+
         default:
+
             return 50;
+
     }
+
 }
 
 
@@ -614,8 +956,6 @@ function generateTrackingCode() {
         "GT-";
 
 
-    // Four random letters
-
     for (
         let i = 0;
         i < 4;
@@ -624,18 +964,21 @@ function generateTrackingCode() {
 
         code +=
             letters.charAt(
+
                 Math.floor(
+
                     Math.random() *
                     letters.length
+
                 )
+
             );
+
     }
 
 
     code += "-";
 
-
-    // Six random numbers
 
     for (
         let i = 0;
@@ -645,15 +988,21 @@ function generateTrackingCode() {
 
         code +=
             numbers.charAt(
+
                 Math.floor(
+
                     Math.random() *
                     numbers.length
+
                 )
+
             );
+
     }
 
 
     return code;
+
 }
 
 
@@ -670,17 +1019,25 @@ function createUniqueTrackingCode(
             generateTrackingCode();
 
     } while (
+
         shipments.some(
+
             shipment =>
+
                 normalizeTrackingCode(
                     shipment.trackingCode
                 ) ===
-                normalizeTrackingCode(code)
+                normalizeTrackingCode(
+                    code
+                )
+
         )
+
     );
 
 
     return code;
+
 }
 
 
@@ -700,12 +1057,16 @@ function findShipment(
 
 
     return shipments.find(
+
         shipment =>
+
             normalizeTrackingCode(
                 shipment.trackingCode
             ) ===
             normalizedCode
+
     );
+
 }
 
 
@@ -721,12 +1082,16 @@ function findShipmentIndex(
 
 
     return shipments.findIndex(
+
         shipment =>
+
             normalizeTrackingCode(
                 shipment.trackingCode
             ) ===
             normalizedCode
+
     );
+
 }
 
 
@@ -734,16 +1099,24 @@ function findShipmentIndex(
 // VALIDATE SHIPMENT
 // =========================================================
 
-function validateShipmentData(data) {
+function validateShipmentData(
+    data
+) {
 
     const requiredFields = [
 
         "senderName",
+
         "receiverName",
+
         "receiverPhone",
+
         "origin",
+
         "destination",
+
         "currentLocation",
+
         "status"
 
     ];
@@ -756,23 +1129,401 @@ function validateShipmentData(data) {
         const field of requiredFields
     ) {
 
-        if (!clean(data[field])) {
+        if (
+            !clean(
+                data[field]
+            )
+        ) {
 
-            missingFields.push(field);
+            missingFields.push(
+                field
+            );
+
         }
+
     }
 
 
     return missingFields;
+
+}
+
+
+// =========================================================
+// SEND SHIPMENT EMAIL
+// =========================================================
+
+async function sendShipmentEmail(
+    shipment
+) {
+
+    if (
+        !shipment.customerEmail
+    ) {
+
+        console.warn(
+
+            `No customer email provided for ${shipment.trackingCode}.`
+
+        );
+
+
+        return false;
+
+    }
+
+
+    if (
+        !EMAIL_PASSWORD
+    ) {
+
+        console.error(
+
+            "EMAIL_PASSWORD environment variable is not configured."
+
+        );
+
+
+        return false;
+
+    }
+
+
+    const trackingLink =
+
+        `${TRACKING_BASE_URL}/track.html?code=${encodeURIComponent(
+
+            shipment.trackingCode
+
+        )}`;
+
+
+    const mailOptions = {
+
+        from:
+
+            `"GlobalTrack Logistics" <${EMAIL_USER}>`,
+
+        to:
+
+            shipment.customerEmail,
+
+        subject:
+
+            `Shipment Registered - ${shipment.trackingCode}`,
+
+        text:
+
+`Hello ${shipment.receiverName},
+
+Your shipment has been successfully registered with GlobalTrack Logistics.
+
+Shipment Details
+----------------
+Tracking Number: ${shipment.trackingCode}
+Sender: ${shipment.senderName}
+Origin: ${shipment.origin}
+Destination: ${shipment.destination}
+Current Location: ${shipment.currentLocation}
+Status: ${shipment.status}
+Estimated Delivery: ${shipment.estimatedDelivery || "Not provided"}
+
+You can track your shipment here:
+
+${trackingLink}
+
+Thank you for choosing GlobalTrack Logistics.
+`,
+
+        html:
+
+`
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+</head>
+
+<body style="
+margin:0;
+padding:0;
+background:#f4f6f8;
+font-family:Arial,Helvetica,sans-serif;
+">
+
+<div style="
+max-width:620px;
+margin:30px auto;
+background:#ffffff;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 4px 18px rgba(0,0,0,0.08);
+">
+
+<div style="
+background:#111827;
+padding:28px;
+text-align:center;
+">
+
+<h1 style="
+margin:0;
+color:#ffffff;
+font-size:25px;
+">
+
+GlobalTrack Logistics
+
+</h1>
+
+<p style="
+margin:8px 0 0;
+color:#d1d5db;
+font-size:14px;
+">
+
+Shipment Tracking Notification
+
+</p>
+
+</div>
+
+
+<div style="
+padding:32px;
+">
+
+<h2 style="
+margin-top:0;
+color:#111827;
+">
+
+Hello ${escapeEmailHTML(
+    shipment.receiverName
+)},
+
+</h2>
+
+
+<p style="
+color:#4b5563;
+line-height:1.7;
+">
+
+Your shipment has been successfully registered
+with GlobalTrack Logistics.
+
+</p>
+
+
+<div style="
+background:#f8fafc;
+border:1px solid #e5e7eb;
+border-radius:10px;
+padding:20px;
+margin:24px 0;
+">
+
+<h3 style="
+margin-top:0;
+color:#111827;
+">
+
+Shipment Details
+
+</h3>
+
+
+<p>
+<strong>Tracking Number:</strong>
+${escapeEmailHTML(
+    shipment.trackingCode
+)}
+</p>
+
+
+<p>
+<strong>Sender:</strong>
+${escapeEmailHTML(
+    shipment.senderName
+)}
+</p>
+
+
+<p>
+<strong>Origin:</strong>
+${escapeEmailHTML(
+    shipment.origin
+)}
+</p>
+
+
+<p>
+<strong>Destination:</strong>
+${escapeEmailHTML(
+    shipment.destination
+)}
+</p>
+
+
+<p>
+<strong>Current Location:</strong>
+${escapeEmailHTML(
+    shipment.currentLocation
+)}
+</p>
+
+
+<p>
+<strong>Status:</strong>
+${escapeEmailHTML(
+    shipment.status
+)}
+</p>
+
+
+<p>
+<strong>Estimated Delivery:</strong>
+${escapeEmailHTML(
+    shipment.estimatedDelivery ||
+    "Not provided"
+)}
+</p>
+
+</div>
+
+
+<div style="
+text-align:center;
+margin:30px 0;
+">
+
+<a
+href="${trackingLink}"
+style="
+display:inline-block;
+background:#111827;
+color:#ffffff;
+text-decoration:none;
+padding:14px 26px;
+border-radius:7px;
+font-weight:bold;
+"
+>
+
+Track Your Shipment
+
+</a>
+
+</div>
+
+
+<p style="
+color:#6b7280;
+font-size:13px;
+line-height:1.6;
+">
+
+You can use the tracking button above to view
+the latest information about your shipment.
+
+</p>
+
+</div>
+
+
+<div style="
+background:#f8fafc;
+border-top:1px solid #e5e7eb;
+padding:20px;
+text-align:center;
+">
+
+<p style="
+margin:0;
+color:#6b7280;
+font-size:12px;
+">
+
+©️ 2026 GlobalTrack Logistics.
+All Rights Reserved.
+
+</p>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
+`
+
+    };
+
+
+    try {
+
+        const result =
+            await mailTransporter.sendMail(
+                mailOptions
+            );
+
+
+        console.log(
+
+            `Shipment email sent successfully to ${shipment.customerEmail}`
+
+        );
+
+
+        console.log(
+
+            `Email message ID: ${result.messageId}`
+
+        );
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+
+            "Shipment email failed:",
+
+            error
+
+        );
+
+
+        return false;
+
+    }
+
 }
 
 
 // =========================================================
 // CREATE SHIPMENT
+// ADMIN ONLY
 // =========================================================
 
 app.post(
+
     "/api/shipment/create",
+
+    requireAdminAuth,
+
     async (req, res) => {
 
         try {
@@ -825,19 +1576,21 @@ app.post(
                 );
 
 
-            // =================================================
-            // VALIDATION
-            // =================================================
-
             const missingFields =
                 validateShipmentData({
 
                     senderName,
+
                     receiverName,
+
                     receiverPhone,
+
                     origin,
+
                     destination,
+
                     currentLocation,
+
                     status
 
                 });
@@ -855,20 +1608,13 @@ app.post(
                     missingFields
 
                 });
+
             }
 
-
-            // =================================================
-            // LOAD DATABASE
-            // =================================================
 
             const shipments =
                 loadShipments();
 
-
-            // =================================================
-            // CREATE TRACKING CODE
-            // =================================================
 
             const trackingCode =
                 createUniqueTrackingCode(
@@ -879,10 +1625,6 @@ app.post(
             const now =
                 getCurrentDate();
 
-
-            // =================================================
-            // CREATE SHIPMENT
-            // =================================================
 
             const shipment = {
 
@@ -979,10 +1721,6 @@ app.post(
             };
 
 
-            // =================================================
-            // SAVE
-            // =================================================
-
             shipments.push(
                 shipment
             );
@@ -1002,22 +1740,24 @@ app.post(
                         "Shipment could not be saved."
 
                 });
+
             }
 
 
             console.log(
+
                 `Shipment created: ${trackingCode}`
+
             );
 
 
-            // =================================================
-            // SEND EMAIL
-            // =================================================
-
-            let emailSent = false;
+            let emailSent =
+                false;
 
 
-            if (customerEmail) {
+            if (
+                customerEmail
+            ) {
 
                 emailSent =
                     await sendShipmentEmail(
@@ -1027,15 +1767,13 @@ app.post(
             } else {
 
                 console.warn(
+
                     `No customer email supplied for ${trackingCode}.`
+
                 );
 
             }
 
-
-            // =================================================
-            // RESPONSE
-            // =================================================
 
             return res.status(201).json({
 
@@ -1062,8 +1800,11 @@ app.post(
         } catch (error) {
 
             console.error(
+
                 "Create shipment error:",
+
                 error
+
             );
 
 
@@ -1073,17 +1814,22 @@ app.post(
                     "Server error while creating shipment."
 
             });
+
         }
+
     }
+
 );
 
 
 // =========================================================
-// TRACK SHIPMENT
+// PUBLIC TRACK SHIPMENT
 // =========================================================
 
 app.get(
+
     "/api/shipment/track/:trackingCode",
+
     (req, res) => {
 
         try {
@@ -1102,6 +1848,7 @@ app.get(
                         "Please provide a tracking code."
 
                 });
+
             }
 
 
@@ -1111,8 +1858,11 @@ app.get(
 
             const shipment =
                 findShipment(
+
                     shipments,
+
                     trackingCode
+
                 );
 
 
@@ -1124,12 +1874,9 @@ app.get(
                         "Shipment not found. Please check your tracking code."
 
                 });
+
             }
 
-
-            // =================================================
-            // SUPPORT OLD SHIPMENTS
-            // =================================================
 
             if (
                 !Array.isArray(
@@ -1137,7 +1884,9 @@ app.get(
                 )
             ) {
 
-                shipment.history = [];
+                shipment.history =
+                    [];
+
             }
 
 
@@ -1146,10 +1895,6 @@ app.get(
                     shipment.status
                 );
 
-
-            // =================================================
-            // TRACKING RESPONSE
-            // =================================================
 
             return res.status(200).json({
 
@@ -1169,7 +1914,8 @@ app.get(
                     shipment.receiverPhone,
 
                 customerEmail:
-                    shipment.customerEmail || "",
+                    shipment.customerEmail ||
+                    "",
 
                 origin:
                     shipment.origin,
@@ -1183,19 +1929,24 @@ app.get(
                 status,
 
                 shipmentType:
-                    shipment.shipmentType || "",
+                    shipment.shipmentType ||
+                    "",
 
                 packageName:
-                    shipment.packageName || "",
+                    shipment.packageName ||
+                    "",
 
                 weight:
-                    shipment.weight || "",
+                    shipment.weight ||
+                    "",
 
                 shippingMethod:
-                    shipment.shippingMethod || "",
+                    shipment.shippingMethod ||
+                    "",
 
                 estimatedDelivery:
-                    shipment.estimatedDelivery || "",
+                    shipment.estimatedDelivery ||
+                    "",
 
                 createdAt:
                     shipment.createdAt,
@@ -1212,10 +1963,6 @@ app.get(
                     shipment.history,
 
 
-                // =================================================
-                // MAP COMPATIBILITY
-                // =================================================
-
                 sender: {
 
                     name:
@@ -1225,7 +1972,8 @@ app.get(
                         shipment.origin,
 
                     country:
-                        shipment.senderCountry || ""
+                        shipment.senderCountry ||
+                        ""
 
                 },
 
@@ -1239,7 +1987,8 @@ app.get(
                         shipment.destination,
 
                     country:
-                        shipment.receiverCountry || ""
+                        shipment.receiverCountry ||
+                        ""
 
                 },
 
@@ -1256,8 +2005,11 @@ app.get(
         } catch (error) {
 
             console.error(
+
                 "Tracking error:",
+
                 error
+
             );
 
 
@@ -1267,21 +2019,31 @@ app.get(
                     "Server error while retrieving shipment."
 
             });
+
         }
+
     }
+
 );
 
 
 // =========================================================
 // GET ALL SHIPMENTS
-// Compatible with Admin.js
+// ADMIN ONLY
 // =========================================================
 
 app.get(
+
     [
+
         "/api/shipments",
+
         "/api/shipment/all"
+
     ],
+
+    requireAdminAuth,
+
     (req, res) => {
 
         try {
@@ -1291,18 +2053,23 @@ app.get(
 
 
             shipments.sort(
+
                 (a, b) =>
+
                     new Date(
                         b.createdAt || 0
                     ) -
+
                     new Date(
                         a.createdAt || 0
                     )
+
             );
 
 
             const result =
                 shipments.map(
+
                     shipment => ({
 
                         ...shipment,
@@ -1313,6 +2080,7 @@ app.get(
                             )
 
                     })
+
                 );
 
 
@@ -1338,8 +2106,11 @@ app.get(
         } catch (error) {
 
             console.error(
+
                 "Get shipments error:",
+
                 error
+
             );
 
 
@@ -1353,15 +2124,21 @@ app.get(
         }
 
     }
+
 );
 
 
 // =========================================================
 // GET ONE SHIPMENT
+// ADMIN ONLY
 // =========================================================
 
 app.get(
+
     "/api/shipment/:trackingCode",
+
+    requireAdminAuth,
+
     (req, res) => {
 
         try {
@@ -1378,8 +2155,11 @@ app.get(
 
             const shipment =
                 findShipment(
+
                     shipments,
+
                     trackingCode
+
                 );
 
 
@@ -1391,6 +2171,7 @@ app.get(
                         "Shipment not found."
 
                 });
+
             }
 
 
@@ -1408,8 +2189,11 @@ app.get(
         } catch (error) {
 
             console.error(
+
                 "Get shipment error:",
+
                 error
+
             );
 
 
@@ -1419,17 +2203,25 @@ app.get(
                     "Unable to retrieve shipment."
 
             });
+
         }
+
     }
+
 );
 
 
 // =========================================================
 // UPDATE SHIPMENT
+// ADMIN ONLY
 // =========================================================
 
 app.put(
+
     "/api/shipment/:trackingCode",
+
+    requireAdminAuth,
+
     (req, res) => {
 
         try {
@@ -1446,8 +2238,11 @@ app.put(
 
             const index =
                 findShipmentIndex(
+
                     shipments,
+
                     trackingCode
+
                 );
 
 
@@ -1459,6 +2254,7 @@ app.put(
                         "Shipment not found."
 
                 });
+
             }
 
 
@@ -1472,7 +2268,9 @@ app.put(
                 )
             ) {
 
-                shipment.history = [];
+                shipment.history =
+                    [];
+
             }
 
 
@@ -1518,76 +2316,109 @@ app.put(
 
             const hasField =
                 field =>
+
                     Object.prototype.hasOwnProperty.call(
+
                         req.body,
+
                         field
+
                     );
 
 
             const newSenderName =
+
                 hasField("senderName")
+
                     ? clean(
                         req.body.senderName
                     )
+
                     : oldData.senderName;
 
 
             const newReceiverName =
+
                 hasField("receiverName")
+
                     ? clean(
                         req.body.receiverName
                     )
+
                     : oldData.receiverName;
 
 
             const newReceiverPhone =
+
                 hasField("receiverPhone")
+
                     ? clean(
                         req.body.receiverPhone
                     )
+
                     : oldData.receiverPhone;
 
 
             const newOrigin =
+
                 hasField("origin")
+
                     ? clean(
                         req.body.origin
                     )
+
                     : oldData.origin;
 
 
             const newDestination =
+
                 hasField("destination")
+
                     ? clean(
                         req.body.destination
                     )
+
                     : oldData.destination;
 
 
             const newCurrentLocation =
+
                 hasField("currentLocation")
+
                     ? clean(
                         req.body.currentLocation
                     )
+
                     : oldData.currentLocation;
 
 
             const newStatus =
+
                 hasField("status")
+
                     ? normalizeStatus(
                         req.body.status
                     )
+
                     : oldData.status;
 
 
             if (
+
                 !newSenderName ||
+
                 !newReceiverName ||
+
                 !newReceiverPhone ||
+
                 !newOrigin ||
+
                 !newDestination ||
+
                 !newCurrentLocation ||
+
                 !newStatus
+
             ) {
 
                 return res.status(400).json({
@@ -1596,10 +2427,12 @@ app.put(
                         "All shipment information must be provided."
 
                 });
+
             }
 
 
-            const changedFields = [];
+            const changedFields =
+                [];
 
 
             if (
@@ -1610,6 +2443,7 @@ app.put(
                 changedFields.push(
                     "Sender"
                 );
+
             }
 
 
@@ -1621,6 +2455,7 @@ app.put(
                 changedFields.push(
                     "Receiver"
                 );
+
             }
 
 
@@ -1632,6 +2467,7 @@ app.put(
                 changedFields.push(
                     "Receiver Phone"
                 );
+
             }
 
 
@@ -1643,6 +2479,7 @@ app.put(
                 changedFields.push(
                     "Origin"
                 );
+
             }
 
 
@@ -1654,6 +2491,7 @@ app.put(
                 changedFields.push(
                     "Destination"
                 );
+
             }
 
 
@@ -1665,6 +2503,7 @@ app.put(
                 changedFields.push(
                     "Current Location"
                 );
+
             }
 
 
@@ -1676,6 +2515,7 @@ app.put(
                 changedFields.push(
                     "Status"
                 );
+
             }
 
 
@@ -1713,7 +2553,9 @@ app.put(
                 updateDate;
 
 
-            if (informationChanged) {
+            if (
+                informationChanged
+            ) {
 
                 shipment.history.push({
 
@@ -1752,19 +2594,25 @@ app.put(
                         "Shipment could not be saved."
 
                 });
+
             }
 
 
             console.log(
+
                 `Shipment updated: ${trackingCode}`
+
             );
 
 
             return res.status(200).json({
 
                 message:
+
                     informationChanged
+
                         ? "Shipment updated successfully."
+
                         : "No shipment information was changed.",
 
                 shipment: {
@@ -1783,8 +2631,11 @@ app.put(
         } catch (error) {
 
             console.error(
+
                 "Update shipment error:",
+
                 error
+
             );
 
 
@@ -1794,18 +2645,26 @@ app.put(
                     "Server error while updating shipment."
 
             });
+
         }
+
     }
+
 );
 
 
 // =========================================================
 // UPDATE SHIPMENT
 // ADMIN.JS COMPATIBILITY ROUTE
+// ADMIN ONLY
 // =========================================================
 
 app.put(
+
     "/api/shipment/update/:trackingCode",
+
+    requireAdminAuth,
+
     (req, res) => {
 
         try {
@@ -1822,8 +2681,11 @@ app.put(
 
             const index =
                 findShipmentIndex(
+
                     shipments,
+
                     trackingCode
+
                 );
 
 
@@ -1835,6 +2697,7 @@ app.put(
                         "Shipment not found."
 
                 });
+
             }
 
 
@@ -1848,7 +2711,9 @@ app.put(
                 )
             ) {
 
-                shipment.history = [];
+                shipment.history =
+                    [];
+
             }
 
 
@@ -1867,32 +2732,50 @@ app.put(
             const fields = [
 
                 "senderName",
+
                 "receiverName",
+
                 "receiverPhone",
+
                 "customerEmail",
+
                 "origin",
+
                 "destination",
+
                 "currentLocation",
+
                 "shipmentType",
+
                 "packageName",
+
                 "weight",
+
                 "shippingMethod",
+
                 "estimatedDelivery"
 
             ];
 
 
-            const changedFields = [];
+            const changedFields =
+                [];
 
 
             fields.forEach(
+
                 field => {
 
                     if (
+
                         Object.prototype.hasOwnProperty.call(
+
                             req.body,
+
                             field
+
                         )
+
                     ) {
 
                         const newValue =
@@ -1902,10 +2785,12 @@ app.put(
 
 
                         if (
+
                             clean(
                                 shipment[field]
                             ) !==
                             newValue
+
                         ) {
 
                             changedFields.push(
@@ -1921,6 +2806,7 @@ app.put(
                     }
 
                 }
+
             );
 
 
@@ -1929,10 +2815,15 @@ app.put(
             // =================================================
 
             if (
+
                 Object.prototype.hasOwnProperty.call(
+
                     req.body,
+
                     "status"
+
                 )
+
             ) {
 
                 const newStatus =
@@ -1942,8 +2833,10 @@ app.put(
 
 
                 if (
+
                     newStatus !==
                     oldStatus
+
                 ) {
 
                     changedFields.push(
@@ -2002,11 +2895,13 @@ app.put(
             // =================================================
 
             const statusChanged =
+
                 shipment.status !==
                 oldStatus;
 
 
             const locationChanged =
+
                 clean(
                     shipment.currentLocation
                 ) !==
@@ -2018,10 +2913,13 @@ app.put(
             ) {
 
                 let note =
+
                     `Shipment information updated: ${[
+
                         ...new Set(
                             changedFields
                         )
+
                     ].join(", ")}.`;
 
 
@@ -2030,6 +2928,7 @@ app.put(
                 ) {
 
                     note =
+
                         `Shipment status updated from "${oldStatus}" to "${shipment.status}".`;
 
                 } else if (
@@ -2037,6 +2936,7 @@ app.put(
                 ) {
 
                     note =
+
                         `Shipment location updated to "${shipment.currentLocation}".`;
 
                 }
@@ -2059,10 +2959,6 @@ app.put(
 
             }
 
-
-            // =================================================
-            // SAVE
-            // =================================================
 
             shipments[index] =
                 shipment;
@@ -2087,15 +2983,20 @@ app.put(
 
 
             console.log(
+
                 `Shipment updated: ${trackingCode}`
+
             );
 
 
             return res.status(200).json({
 
                 message:
+
                     changedFields.length > 0
+
                         ? "Shipment updated successfully."
+
                         : "No shipment information was changed.",
 
                 shipment: {
@@ -2114,8 +3015,11 @@ app.put(
         } catch (error) {
 
             console.error(
+
                 "Admin update shipment error:",
+
                 error
+
             );
 
 
@@ -2129,15 +3033,21 @@ app.put(
         }
 
     }
+
 );
 
 
 // =========================================================
 // DELETE SHIPMENT
+// ADMIN ONLY
 // =========================================================
 
 app.delete(
+
     "/api/shipment/:trackingCode",
+
+    requireAdminAuth,
+
     (req, res) => {
 
         try {
@@ -2158,16 +3068,24 @@ app.delete(
 
             shipments =
                 shipments.filter(
+
                     shipment =>
+
                         normalizeTrackingCode(
+
                             shipment.trackingCode
-                        ) !== trackingCode
+
+                        ) !==
+                        trackingCode
+
                 );
 
 
             if (
+
                 shipments.length ===
                 originalLength
+
             ) {
 
                 return res.status(404).json({
@@ -2176,6 +3094,7 @@ app.delete(
                         "Shipment not found."
 
                 });
+
             }
 
 
@@ -2193,11 +3112,14 @@ app.delete(
                         "Shipment could not be deleted."
 
                 });
+
             }
 
 
             console.log(
+
                 `Shipment deleted: ${trackingCode}`
+
             );
 
 
@@ -2211,8 +3133,11 @@ app.delete(
         } catch (error) {
 
             console.error(
+
                 "Delete shipment error:",
+
                 error
+
             );
 
 
@@ -2222,17 +3147,23 @@ app.delete(
                     "Server error while deleting shipment."
 
             });
+
         }
+
     }
+
 );
 
 
 // =========================================================
 // HEALTH CHECK
+// PUBLIC
 // =========================================================
 
 app.get(
+
     "/api/health",
+
     (req, res) => {
 
         return res.status(200).json({
@@ -2252,6 +3183,7 @@ app.get(
         });
 
     }
+
 );
 
 
@@ -2260,7 +3192,9 @@ app.get(
 // =========================================================
 
 app.use(
+
     "/api",
+
     (req, res) => {
 
         return res.status(404).json({
@@ -2271,6 +3205,7 @@ app.use(
         });
 
     }
+
 );
 
 
@@ -2279,11 +3214,15 @@ app.use(
 // =========================================================
 
 app.use(
+
     (error, req, res, next) => {
 
         console.error(
+
             "Unhandled server error:",
+
             error
+
         );
 
 
@@ -2291,7 +3230,10 @@ app.use(
             res.headersSent
         ) {
 
-            return next(error);
+            return next(
+                error
+            );
+
         }
 
 
@@ -2303,6 +3245,7 @@ app.use(
         });
 
     }
+
 );
 
 
@@ -2311,8 +3254,11 @@ app.use(
 // =========================================================
 
 app.listen(
+
     PORT,
+
     "0.0.0.0",
+
     () => {
 
         console.log("");
@@ -2330,30 +3276,49 @@ app.listen(
         );
 
         console.log(
+
             `Server running at: http://localhost:${PORT}`
+
         );
 
         console.log(
+
+            `Admin Login:       http://localhost:${PORT}/admin-login.html`
+
+        );
+
+        console.log(
+
             `Admin Dashboard:   http://localhost:${PORT}/admin.html`
+
         );
 
         console.log(
+
             `Tracking Page:     http://localhost:${PORT}/index.html`
+
         );
 
         console.log(
+
             `Shipments API:     http://localhost:${PORT}/api/shipments`
+
         );
 
         console.log(
+
             `Health Check:      http://localhost:${PORT}/api/health`
+
         );
 
         console.log(
+
             "=========================================="
+
         );
 
         console.log("");
 
     }
+
 );
