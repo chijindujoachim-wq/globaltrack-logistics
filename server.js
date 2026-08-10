@@ -481,71 +481,91 @@ app.post(
 
             const shipment = {
 
-                id:
-                    `${Date.now()}-${Math.random()
-                        .toString(36)
-                        .substring(2, 8)}`,
+    id:
+        `${Date.now()}-${Math.random()
+            .toString(36)
+            .substring(2, 8)}`,
 
-                trackingCode,
+    trackingCode,
 
-                senderName,
+    senderName,
 
-                receiverName,
+    receiverName,
 
-                receiverPhone,
+    receiverPhone,
 
+    origin,
+
+    destination,
+
+    currentLocation,
+
+    status,
+
+    shipmentType:
+        clean(
+            req.body.shipmentType
+        ),
+
+    packageName:
+        clean(
+            req.body.packageName
+        ),
+
+    weight:
+        clean(
+            req.body.weight
+        ),
+
+    shippingMethod:
+        clean(
+            req.body.shippingMethod
+        ),
+
+    estimatedDelivery:
+        clean(
+            req.body.estimatedDelivery
+        ),
+
+    createdAt:
+        now,
+
+    updatedAt:
+        now,
+
+    history: [
+
+        {
+            location:
                 origin,
 
-                destination,
+            status:
+                "Shipment Created",
 
+            date:
+                now,
+
+            note:
+                "Shipment was registered successfully."
+        },
+
+        {
+            location:
                 currentLocation,
 
+            status:
                 status,
 
-                createdAt:
-                    now,
+            date:
+                now,
 
-                updatedAt:
-                    now,
+            note:
+                "Initial shipment status recorded."
+        }
 
-                history: [
+    ]
 
-                    {
-
-                        location:
-                            origin,
-
-                        status:
-                            "Shipment Created",
-
-                        date:
-                            now,
-
-                        note:
-                            "Shipment was registered successfully."
-
-                    },
-
-                    {
-
-                        location:
-                            currentLocation,
-
-                        status:
-                            status,
-
-                        date:
-                            now,
-
-                        note:
-                            "Initial shipment status recorded."
-
-                    }
-
-                ]
-
-            };
-
+};
 
             // =================================================
             // SAVE
@@ -800,6 +820,11 @@ app.get(
 // GET ALL SHIPMENTS
 // =========================================================
 
+// =========================================================
+// GET ALL SHIPMENTS
+// Compatible with Admin.js
+// =========================================================
+
 app.get(
     ["/api/shipments", "/api/shipment/all"],
     (req, res) => {
@@ -808,9 +833,6 @@ app.get(
 
             const shipments =
                 loadShipments();
-
-
-            // Newest first
 
             shipments.sort(
                 (a, b) =>
@@ -822,8 +844,7 @@ app.get(
                     )
             );
 
-
-            return res.status(200).json(
+            const result =
                 shipments.map(
                     shipment => ({
 
@@ -835,7 +856,32 @@ app.get(
                             )
 
                     })
-                )
+                );
+
+            /*
+             * /api/shipment/all
+             *
+             * Admin.js accepts this format.
+             */
+
+            if (
+                req.path ===
+                "/api/shipment/all"
+            ) {
+
+                return res.status(200).json({
+                    shipments: result
+                });
+
+            }
+
+            /*
+             * Keep /api/shipments compatible
+             * with any other page using it.
+             */
+
+            return res.status(200).json(
+                result
             );
 
         } catch (error) {
@@ -851,10 +897,11 @@ app.get(
                     "Unable to retrieve shipments."
 
             });
+
         }
+
     }
 );
-
 
 // =========================================================
 // GET ONE SHIPMENT
@@ -1347,6 +1394,314 @@ app.put(
     }
 );
 
+// =========================================================
+// UPDATE SHIPMENT
+// ADMIN.JS COMPATIBILITY ROUTE
+// =========================================================
+
+app.put(
+    "/api/shipment/update/:trackingCode",
+    (req, res) => {
+
+        try {
+
+            const trackingCode =
+                normalizeTrackingCode(
+                    req.params.trackingCode
+                );
+
+            const shipments =
+                loadShipments();
+
+            const index =
+                findShipmentIndex(
+                    shipments,
+                    trackingCode
+                );
+
+            if (index === -1) {
+
+                return res.status(404).json({
+
+                    message:
+                        "Shipment not found."
+
+                });
+
+            }
+
+            const shipment =
+                shipments[index];
+
+            if (
+                !Array.isArray(
+                    shipment.history
+                )
+            ) {
+
+                shipment.history = [];
+
+            }
+
+            const oldStatus =
+                normalizeStatus(
+                    shipment.status
+                );
+
+            const oldLocation =
+                clean(
+                    shipment.currentLocation
+                );
+
+            const fields = [
+
+                "senderName",
+                "receiverName",
+                "receiverPhone",
+                "origin",
+                "destination",
+                "currentLocation",
+                "shipmentType",
+                "packageName",
+                "weight",
+                "shippingMethod",
+                "estimatedDelivery"
+
+            ];
+
+            const changedFields = [];
+
+            fields.forEach(
+                field => {
+
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            req.body,
+                            field
+                        )
+                    ) {
+
+                        const newValue =
+                            clean(
+                                req.body[field]
+                            );
+
+                        if (
+                            clean(
+                                shipment[field]
+                            ) !==
+                            newValue
+                        ) {
+
+                            changedFields.push(
+                                field
+                            );
+
+                        }
+
+                        shipment[field] =
+                            newValue;
+
+                    }
+
+                }
+            );
+
+
+            // =================================================
+            // STATUS
+            // =================================================
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    req.body,
+                    "status"
+                )
+            ) {
+
+                const newStatus =
+                    normalizeStatus(
+                        req.body.status
+                    );
+
+                if (
+                    newStatus !==
+                    oldStatus
+                ) {
+
+                    changedFields.push(
+                        "Status"
+                    );
+
+                }
+
+                shipment.status =
+                    newStatus;
+
+            }
+
+
+            // =================================================
+            // VALIDATE REQUIRED FIELDS
+            // =================================================
+
+            const missingFields =
+                validateShipmentData(
+                    shipment
+                );
+
+            if (
+                missingFields.length > 0
+            ) {
+
+                return res.status(400).json({
+
+                    message:
+                        "All shipment information must be provided.",
+
+                    missingFields
+
+                });
+
+            }
+
+
+            // =================================================
+            // UPDATE TIMESTAMP
+            // =================================================
+
+            const updateDate =
+                getCurrentDate();
+
+            shipment.updatedAt =
+                updateDate;
+
+
+            // =================================================
+            // ADD HISTORY
+            // =================================================
+
+            const statusChanged =
+                shipment.status !==
+                oldStatus;
+
+            const locationChanged =
+                clean(
+                    shipment.currentLocation
+                ) !==
+                oldLocation;
+
+
+            if (
+                changedFields.length > 0
+            ) {
+
+                let note =
+                    `Shipment information updated: ${[
+                        ...new Set(changedFields)
+                    ].join(", ")}.`;
+
+                if (
+                    statusChanged
+                ) {
+
+                    note =
+                        `Shipment status updated from "${oldStatus}" to "${shipment.status}".`;
+
+                } else if (
+                    locationChanged
+                ) {
+
+                    note =
+                        `Shipment location updated to "${shipment.currentLocation}".`;
+
+                }
+
+                shipment.history.push({
+
+                    location:
+                        shipment.currentLocation,
+
+                    status:
+                        shipment.status,
+
+                    date:
+                        updateDate,
+
+                    note
+
+                });
+
+            }
+
+
+            // =================================================
+            // SAVE
+            // =================================================
+
+            shipments[index] =
+                shipment;
+
+            const saved =
+                saveShipments(
+                    shipments
+                );
+
+            if (!saved) {
+
+                return res.status(500).json({
+
+                    message:
+                        "Shipment could not be saved."
+
+                });
+
+            }
+
+
+            console.log(
+                `Shipment updated: ${trackingCode}`
+            );
+
+
+            return res.status(200).json({
+
+                message:
+                    changedFields.length > 0
+                        ? "Shipment updated successfully."
+                        : "No shipment information was changed.",
+
+                shipment: {
+
+                    ...shipment,
+
+                    progress:
+                        getProgress(
+                            shipment.status
+                        )
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Admin update shipment error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                message:
+                    "Server error while updating shipment."
+
+            });
+
+        }
+
+    }
+);
 
 // =========================================================
 // DELETE SHIPMENT
