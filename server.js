@@ -101,14 +101,13 @@ const TRACKING_BASE_URL =
 // =========================================================
 
 const ADMIN_EMAIL =
-    "admin@globaltracklogistics.com";
+    process.env.ADMIN_EMAIL;
 
 const ADMIN_PASSWORD_HASH =
-    "$2b$10$F.TEdwd6ILrsA/j9U9qrseYxhFYrITklcoWsDRzNkOCVNrT2FRDEO";
+    process.env.ADMIN_PASSWORD_HASH;
 
-const JWT_SECRET =
-    process.env.JWT_SECRET ||
-    "globaltrack-logistics-admin-secret-change-this";
+const JWT_SECRET = 
+    process.env.JWT_SECRET;
 
 const ADMIN_COOKIE_NAME =
     "globaltrack_admin_token";
