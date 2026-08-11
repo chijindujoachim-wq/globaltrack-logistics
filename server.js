@@ -95,7 +95,7 @@ const TRACKING_BASE_URL =
 // =========================================================
 
 const ADMIN_EMAIL =
-    process.env.ADMIN_EMAIL;
+    (process.env.ADMIN_EMAIL || "").trim();
 
 const ADMIN_PASSWORD_HASH =
     process.env.ADMIN_PASSWORD_HASH;
@@ -418,10 +418,31 @@ app.post(
             // EMAIL CHECK
             // =================================================
 
+            console.log("========== ADMIN LOGIN DEBUG ==========");
+            console.log("Received email:", JSON.stringify(email));
+            console.log("Server admin email:", JSON.stringify(ADMIN_EMAIL));
+            console.log(
+                "Email matches:",
+                email === ADMIN_EMAIL.toLowerCase()
+            );
+            console.log(
+                "Password hash exists:",
+                Boolean(ADMIN_PASSWORD_HASH)
+            );
+            console.log(
+                "Password hash starts correctly:",
+                ADMIN_PASSWORD_HASH
+                    ? ADMIN_PASSWORD_HASH.startsWith("$2")
+                    : false
+            );
+            console.log("=======================================");
+
             if (
                 email !==
                 ADMIN_EMAIL.toLowerCase()
             ) {
+
+                console.log("ADMIN LOGIN FAILED: EMAIL DOES NOT MATCH");
 
                 return res.status(401).json({
 
@@ -430,7 +451,7 @@ app.post(
 
                 });
 
-            }
+            }   
 
 
             // =================================================
