@@ -457,7 +457,7 @@ app.post(
             // =================================================
             // PASSWORD CHECK
             // =================================================
-
+            
             const passwordMatches =
                 await bcrypt.compare(
                     password,
