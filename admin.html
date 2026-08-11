@@ -20,6 +20,75 @@
         href="logo.jpg"
     >
 
+    <script>
+    (async function protectAdminPage() {
+
+        const API_BASE_URL =
+            "https://globaltrack-logistics.onrender.com";
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE_URL}/api/admin/me`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+            if (!response.ok) {
+
+                window.location.replace(
+                    "admin-login.html"
+                );
+
+                return;
+            }
+
+            const data =
+                await response.json();
+
+            if (
+                !data ||
+                data.authenticated !== true
+            ) {
+
+                window.location.replace(
+                    "admin-login.html"
+                );
+
+                return;
+            }
+
+            /*
+                Administrator is authenticated.
+                Allow admin.html to continue loading.
+            */
+
+            document.documentElement.classList.add(
+                "admin-authenticated"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Admin authentication check failed:",
+                error
+            );
+
+            window.location.replace(
+                "admin-login.html"
+            );
+
+        }
+
+    })();
+</script>
+
     <link
         rel="stylesheet"
         href="admin.css"

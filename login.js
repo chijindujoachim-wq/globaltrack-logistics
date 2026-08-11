@@ -13,6 +13,54 @@ const API_BASE_URL =
 
 
 /* =========================================================
+   REDIRECT ALREADY AUTHENTICATED ADMIN
+========================================================= */
+
+(async function checkExistingAdminSession() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/api/admin/me`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+        if (!response.ok) {
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if (
+            data &&
+            data.authenticated === true
+        ) {
+
+            window.location.replace(
+                "admin.html"
+            );
+
+        }
+
+    } catch (error) {
+
+        console.log(
+            "No active administrator session."
+        );
+
+    }
+
+})();
+
+/* =========================================================
    DOM ELEMENTS
 ========================================================= */
 
