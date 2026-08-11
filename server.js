@@ -101,7 +101,7 @@ const TRACKING_BASE_URL =
 // =========================================================
 
 const ADMIN_EMAIL =
-    process.env.ADMIN_EMAIL;
+    process.env.ADMIN_EMAIL || "admin@globaltracklogistics.com";
 
 const ADMIN_PASSWORD_HASH =
     process.env.ADMIN_PASSWORD_HASH;
